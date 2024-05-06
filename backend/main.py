@@ -1,9 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restx import Api, Resource, fields
 from flask_migrate import Migrate
 from config import DevConfig
-from models import Product, Category, Order, OrderItem
+from models import Product, Category, Order, OrderItem, User
 from exts import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -43,7 +44,16 @@ order_model = api.model(
     {
         "id":fields.Integer(),
         "total_price":fields.Integer(),
-        "order_date":fields.DateTime(),
+        "order_date":fields.DateTime()
+    }
+)
+
+signup_model = api.model(
+    "SignUp",
+    {
+        "username":fields.String(),
+        "email":fields.String(),
+        "password":fields.String()
     }
 )
 
@@ -53,7 +63,36 @@ order_model = api.model(
 class HelloResource(Resource):
     def get(self):
         return {'message': 'Hello World'}
-    
+
+@api.route('/signup')
+class SignUp(Resource):
+    @api.marshal_list_with(signup_model)
+    def post(self):
+        data = request.get_json()
+
+        username = data.get('username')
+
+        db_user = User.query.filter_by(username = username).first()
+
+        if db_user is not None:
+            return jsonify({"message": f"User with username {username} already exists"})
+
+        new_user = User(
+            username = data.get('username'),
+            email = data.get('email'),
+            password = generate_password_hash(data.get('password'))
+        )
+
+        new_user.save()
+
+        return new_user,201
+
+@api.route('/login')
+class Login(Resource):
+    def post(self):
+        pass
+
+
 @api.route('/products')
 class ProductsResource(Resource):
 
@@ -64,6 +103,7 @@ class ProductsResource(Resource):
         return products
     
     @api.marshal_with(product_model)
+    @api.expect(product_model)
     def post(self):
         #crea nuovo Prodotto
         data = request.get_json()
