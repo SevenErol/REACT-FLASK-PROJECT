@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom/client';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from './components/Navbar';
+import HomePage from './components/Home';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+import CreateProduct from './components/CreateProduct';
 
 const App = () => {
 
-    useEffect(
-        () => {
-            fetch('/product/hello')
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data); setMessage(data.message)
-                })
-                .catch(err => console.log(err))
-
-
-        }, []
-    )
-    const [message, setMessage] = useState('')
     return (
-        <div className="app">
-            <h1>{message}</h1>
-        </div >
+        <BrowserRouter>
+            <div className="container">
+                <Navbar />
+                <Routes>
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/create_product" element={<CreateProduct />} />
+                </Routes>
+            </div >
+        </BrowserRouter>
     )
 }
 
