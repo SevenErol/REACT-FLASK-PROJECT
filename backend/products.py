@@ -18,6 +18,11 @@ product_model = products_ns.model(
     }
 )
 
+@products_ns.route('/hello')
+class HelloResource(Resource):
+    def get(self):
+        return {'message': 'Hello World'}
+
 @products_ns.route('/products')
 class ProductsResource(Resource):
 
