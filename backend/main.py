@@ -6,11 +6,14 @@ from exts import db
 from flask_jwt_extended import JWTManager
 from products import products_ns
 from auth import auth_ns
+from flask_cors import CORS
 
 def create_app(config):
 
     app = Flask(__name__)
     app.config.from_object(config)
+
+    CORS(app)
 
     db.init_app(app)
 
