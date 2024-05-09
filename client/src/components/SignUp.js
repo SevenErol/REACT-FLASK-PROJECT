@@ -14,7 +14,7 @@ const SignUp = () => {
         formState: { errors }
     } = useForm()
 
-    const [show, setShow] = useState(true);
+    const [show, setShow] = useState(false);
     const [serverResponse, setServerResponse] = useState('')
 
     const submitForm = (data) => {
@@ -57,7 +57,7 @@ const SignUp = () => {
                 {show ?
                     <>
                         <Alert variant="success" onClose={() => setShow(false)} dismissible>
-                            <Alert.Heading>{serverResponse}</Alert.Heading>
+                            <p>{serverResponse}</p>
                         </Alert>
 
                         <h1>Signup</h1>
