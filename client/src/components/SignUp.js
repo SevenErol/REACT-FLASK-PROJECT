@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import Alert from 'react-bootstrap/Alert';
 
 const SignUp = () => {
 
@@ -13,52 +14,93 @@ const SignUp = () => {
         formState: { errors }
     } = useForm()
 
+    const [show, setShow] = useState(true);
+    const [serverResponse, setServerResponse] = useState('')
 
     const submitForm = (data) => {
-        console.log(data)
-        reset()
+
+        if (data.password === data.confirmPassword) {
+
+            const body = {
+                'username': data.username,
+                'email': data.email,
+                'password': data.password
+            }
+
+            const requestData = {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch('/auth/signup', requestData)
+                .then(res => res.json())
+                .then(data => {
+                    setServerResponse(data.message)
+                    setShow(true)
+                })
+                .catch(err => console.log(err))
+
+            reset()
+        } else {
+            alert('Passwords does not match')
+        }
+
+
     }
 
     return (
         <div className='container'>
             <div className='form'>
-                <h1>Signup</h1>
+                {show ?
+                    <>
+                        <Alert variant="success" onClose={() => setShow(false)} dismissible>
+                            <Alert.Heading>{serverResponse}</Alert.Heading>
+                        </Alert>
+
+                        <h1>Signup</h1>
+                    </>
+                    :
+                    <h1>Signup</h1>
+                }
+
                 <form>
                     <Form.Group>
                         <Form.Label>Username</Form.Label>
                         <Form.Control type='text' placheholder='Your username' {...register('username', { required: true, maxLength: 25 })} />
                     </Form.Group>
-                    {errors.username && <small style={{ color: 'red' }}>Username is required</small>}
-                    <br></br>
-                    {errors.username?.type === 'maxLength' && <small style={{ color: 'red' }}>Max characters should be 25</small>}
-                    <br></br>
+
+                    {errors.username && <p style={{ color: 'red' }}><small>Username is required</small></p>}
+                    {errors.username?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
+
 
                     <Form.Group>
                         <Form.Label>Email</Form.Label>
                         <Form.Control type='email' placheholder='Your email' name='email' {...register('email', { required: true, maxLength: 80 })} />
                     </Form.Group>
-                    {errors.email && <small style={{ color: 'red' }}>Email is required</small>}
-                    <br></br>
-                    {errors.email?.type === 'maxLength' && <small style={{ color: 'red' }}>Max characters should be 80</small>}
-                    <br></br>
+
+                    {errors.email && <p style={{ color: 'red' }}><small>Email is required</small> </p>}
+                    {errors.email?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 80</small></p>}
+
 
                     <Form.Group>
                         <Form.Label>Password</Form.Label>
                         <Form.Control type='password' placheholder='Your password' name='password' {...register('password', { required: true, minLength: 8 })} />
                     </Form.Group>
-                    {errors.password && <small style={{ color: 'red' }}>Password is required</small>}
-                    <br></br>
-                    {errors.password?.type === 'minLength' && <small style={{ color: 'red' }}>Min characters should be 8</small>}
-                    <br></br>
+
+                    {errors.password && <p style={{ color: 'red' }}><small>Password is required</small></p>}
+                    {errors.password?.type === 'minLength' && <p style={{ color: 'red' }}><small>Min characters should be 8</small></p>}
+
 
                     <Form.Group>
                         <Form.Label>Confirm Password</Form.Label>
                         <Form.Control type='password' placheholder='Confirm Your password' name='confirmPassword' {...register('confirmPassword', { required: true, minLength: 8 })} />
                     </Form.Group>
-                    {errors.confirmPassword && <small style={{ color: 'red' }}>Confirm Password is required</small>}
-                    <br></br>
-                    {errors.confirmPassword?.type === 'minLength' && <small style={{ color: 'red' }}>Min characters should be 25</small>}
-                    <br></br>
+
+                    {errors.confirmPassword && <p style={{ color: 'red' }}><small>Confirm Password is required</small></p>}
+                    {errors.confirmPassword?.type === 'minLength' && <p style={{ color: 'red' }}><small>Min characters should be 25</small></p>}
 
                     <Form.Group>
                         <Button as='sub' variant='primary' onClick={handleSubmit(submitForm)}>Signup</Button>
