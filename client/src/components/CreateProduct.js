@@ -30,13 +30,14 @@ const CreateProduct = () => {
 
         fetch('/product/products', requestData)
             .then(res => res.json)
-            .then(data =>
-                console.log(data),
+            .then(data => {
+                reset()
                 navigate('/home')
+            }
             )
             .catch(err => console.log(err))
 
-        reset()
+
     }
 
 

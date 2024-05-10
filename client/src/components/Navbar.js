@@ -6,7 +6,7 @@ const LoggedInLinks = () => {
     return (
         <>
             <Link className="nav-link active" to="/home">Home</Link>
-            <a className="nav-link active" to="/login" onClick={() => { logout() }}>Logout</a>
+            <Link className="nav-link active" to="/login" onClick={() => { logout() }}>Logout</Link>
             <Link className="nav-link active" to="/create_product">Create Product</Link>
         </>
     )

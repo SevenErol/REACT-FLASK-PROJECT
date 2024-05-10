@@ -1,4 +1,4 @@
-import Card from 'react-bootstrap/Card';
+import { Card } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 
 
@@ -18,7 +18,10 @@ const Product = props => {
                     <Card.Text>
                         {props.stock}
                     </Card.Text>
-                    <Button variant="primary">Go somewhere</Button>
+                    <Card.Text>
+                        {props.category_id}
+                    </Card.Text>
+                    <Button variant="primary" onClick={props.onClick}>Update</Button>
                 </Card.Body>
                 <Card.Footer className="text-muted">2 days ago</Card.Footer>
             </Card >
