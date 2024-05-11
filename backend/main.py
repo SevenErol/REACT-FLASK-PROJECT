@@ -7,11 +7,12 @@ from flask_jwt_extended import JWTManager
 from products import products_ns
 from auth import auth_ns
 from flask_cors import CORS
+from config import DevConfig
 
-def create_app(config):
+def create_app():
 
     app = Flask(__name__)
-    app.config.from_object(config)
+    app.config.from_object(DevConfig)
 
     CORS(app)
 
@@ -37,9 +38,6 @@ def create_app(config):
         }
 
     return app
-
-
-
 
 '''
 

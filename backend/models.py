@@ -27,7 +27,7 @@ class Product(db.Model):
     category = db.relationship('Category', backref=db.backref('products', lazy=True))
 
     def __repr__(self):
-        return f"<Product {self.name} {self.description}>"
+        return f"<Product {self.name} {self.description} {self.price} {self.stock} {self.category_id}>"
     
     def save(self):
         db.session.add(self)
@@ -37,9 +37,12 @@ class Product(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def update(self, name, description):
+    def update(self, name, description, price, stock, category_id):
         self.name = name
         self.description = description
+        self.price = price
+        self.stock = stock
+        self.category_id = category_id
 
         db.session.commit()
 

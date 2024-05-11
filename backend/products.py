@@ -11,7 +11,7 @@ product_model = products_ns.model(
         "id":fields.Integer(),
         "name":fields.String(),
         "description":fields.String(),
-        "price":fields.Integer(),
+        "price":fields.Float(),
         "stock":fields.Integer(),
         "created_at":fields.DateTime(),
         "category_id":fields.Integer()
@@ -67,7 +67,7 @@ class ProductResource(Resource):
         product_to_update = Product.query.get_or_404(id)
         data = request.get_json()
 
-        product_to_update.update(data.get('name'),data.get('description'))
+        product_to_update.update(data.get('name'),data.get('description'),data.get('price'),data.get('stock'),data.get('category_id'))
 
         return product_to_update
     

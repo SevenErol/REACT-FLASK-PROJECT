@@ -30,9 +30,14 @@
 }
 
 .lm_form {
-    margin-top: 4rem;
+    margin-top: 3rem;
     width: 70%;
     border: 2px solid #e2e8f0;
     padding: 2rem;
-    box-shadow: 10px 10px lightblue
+    box-shadow: 10px 10px lightblue;
+    overflow: auto
+}
+
+#lm_container {
+    overflow: auto
 }

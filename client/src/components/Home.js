@@ -26,19 +26,9 @@ const LoggedInHome = () => {
                     setProducts(data)
                 })
                 .catch(err => console.log(err))
-        }
+        }, []
     )
 
-    const getAllProducts = () => {
-        return (
-            fetch('/product/products')
-                .then(res => res.json())
-                .then(data => {
-                    setProducts(data)
-                })
-                .catch(err => console.log(err))
-        )
-    }
 
 
     const closeModal = () => {
@@ -66,6 +56,9 @@ const LoggedInHome = () => {
 
     const updateProduct = (data) => {
 
+        console.log(data)
+        console.log(token)
+
         const requestData = {
             method: 'PUT',
             headers: {
@@ -80,12 +73,24 @@ const LoggedInHome = () => {
             .then(data => {
                 const reload = window.location.reload()
                 reload()
+
             }
             )
             .catch(err => console.log(err))
     }
 
     const deleteProduct = (id) => {
+
+        const getAllProducts = () => {
+            return (
+                fetch('/product/products')
+                    .then(res => res.json())
+                    .then(data => {
+                        setProducts(data)
+                    })
+                    .catch(err => console.log(err))
+            )
+        }
 
         const requestData = {
             method: 'DELETE',
@@ -113,11 +118,11 @@ const LoggedInHome = () => {
                 <div className='col-2 p-3 lm_menu d-flex flex-column'>
                     <h3 className='font-weight-bold mb-3 p-2 text-center'>Menù</h3>
                     <div className='mb-3 p-2 text-center'>
-                        <Link className="nav-link active col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                        <Link className="col-2 lm_menu_voice" to="/create_product">Create Product</Link>
                     </div>
 
                     <div className='mb-3 p-2 text-center'>
-                        <Link className="nav-link active col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                        <Link className="col-2 lm_menu_voice" to="/create_product">Create Product</Link>
                     </div>
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
@@ -127,7 +132,7 @@ const LoggedInHome = () => {
                                 <h1>Products</h1>
                             </div>
                             <div className='col-2'>
-                                <Button variant="success my-2" to="/create_product">Add new product</Button>
+                                <Link className='btn btn-success' to="/create_product">Add new product</Link>
                             </div>
                         </div>
 
@@ -188,7 +193,7 @@ const LoggedInHome = () => {
                         {/* Campo price oggetto product */}
                         <Form.Group>
                             <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" min="1" step="any" placheholder='Product price' {...register('price', { required: true })} />
+                            <Form.Control type="number" min="1" step=".01" placheholder='Product price' {...register('price', { required: true })} />
                         </Form.Group>
 
                         {errors.price && <p style={{ color: 'red' }}><small>Price is required</small></p>}
@@ -220,13 +225,7 @@ const LoggedInHome = () => {
                         </Form.Group>
                     </Modal.Body>
                 </Modal>
-
-
-
-
             </div>
-
-
         </div>
     )
 }
