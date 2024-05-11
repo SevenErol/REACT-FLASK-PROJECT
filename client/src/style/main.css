@@ -1,0 +1,38 @@
+.lm_header {
+    height: 80px;
+    color: #2E40A1;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.lm_main {
+    height: calc(100vh - 80px);
+}
+
+.container-fluid {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.lm_menu {
+    height: calc(100vh - 80px);
+    border-right: 1px solid #e2e8f0;
+}
+
+.lm_menu_voice {
+    height: 100%;
+    width: 100%;
+}
+
+.lm_inner_menu {
+    overflow: auto;
+}
+
+.lm_form {
+    margin-top: 4rem;
+    width: 70%;
+    border: 2px solid #e2e8f0;
+    padding: 2rem;
+    box-shadow: 10px 10px lightblue
+}

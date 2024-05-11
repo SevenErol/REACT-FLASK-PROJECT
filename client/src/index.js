@@ -13,7 +13,7 @@ const App = () => {
 
     return (
         <BrowserRouter>
-            <div className="container">
+            <div className="container-fluid p-0 m-0">
                 <Navbar />
                 <Routes>
                     <Route path="/home" element={<HomePage />} />

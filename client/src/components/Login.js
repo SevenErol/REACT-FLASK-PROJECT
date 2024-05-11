@@ -41,35 +41,36 @@ const Login = () => {
     }
 
     return (
-        <div className='container'>
-            <div className='form'>
-                <h1>Login</h1>
-                <form>
-                    <Form.Group>
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control type='text' placheholder='Your username' {...register('username', { required: true, maxLength: 25 })} />
-                    </Form.Group>
+        <div className='container lm_main'>
+            <div className='row justify-content-center align-items-center'>
+                <div className='form lm_form'>
+                    <h1>Login</h1>
+                    <form>
+                        <Form.Group>
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control type='text' placheholder='Your username' {...register('username', { required: true, maxLength: 25 })} />
+                        </Form.Group>
 
-                    {errors.username && <p style={{ color: 'red' }}><small>Username is required</small></p>}
-                    {errors.username?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
+                        {errors.username && <p style={{ color: 'red' }}><small>Username is required</small></p>}
+                        {errors.username?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
 
-                    <Form.Group>
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type='password' placheholder='Your password' {...register('password', { required: true, minLength: 8 })} />
-                    </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control className='mb-2' type='password' placheholder='Your password' {...register('password', { required: true, minLength: 8 })} />
+                        </Form.Group>
 
-                    {errors.password && <p style={{ color: 'red' }}><small>Password is required</small></p>}
-                    {errors.password?.type === 'minLength' && <p style={{ color: 'red' }}><small>Min characters should be 8</small></p>}
+                        {errors.password && <p style={{ color: 'red' }}><small>Password is required</small></p>}
+                        {errors.password?.type === 'minLength' && <p style={{ color: 'red' }}><small>Min characters should be 8</small></p>}
 
-                    <Form.Group>
-                        <Button as='sub' variant='primary' onClick={handleSubmit(loginUser)}>Login</Button>
-                    </Form.Group>
-                    <br></br>
+                        <Form.Group>
+                            <Button className='mb-2' as='sub' variant='primary' onClick={handleSubmit(loginUser)}>Login</Button>
+                        </Form.Group>
 
-                    <Form.Group>
-                        <small>Do not have an account? <Link to='/signup'>Create one</Link> </small>
-                    </Form.Group>
-                </form>
+                        <Form.Group>
+                            <small>Do not have an account? <Link to='/signup'>Create one</Link> </small>
+                        </Form.Group>
+                    </form>
+                </div>
             </div>
         </div>
     )

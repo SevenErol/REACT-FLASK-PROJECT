@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth'
 import Product from './Product'
-import { Modal, Form, Button } from 'react-bootstrap'
+import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 
 const LoggedInHome = () => {
@@ -106,82 +106,118 @@ const LoggedInHome = () => {
 
 
     return (
-        <div className='products'>
+        <div className='products container-fluid lm_main'>
 
-            <Modal show={show} size='lg' onHide={closeModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        Update Product
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/* Campo name oggetto product */}
-                    <Form.Group>
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type='text' placheholder='Product name' {...register('name', { required: true, maxLength: 25 })} />
-                    </Form.Group>
+            <div className='row'>
 
-                    {errors.name && <p style={{ color: 'red' }}><small>Name is required</small></p>}
-                    {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
+                <div className='col-2 p-3 lm_menu d-flex flex-column'>
+                    <div className='mb-3 p-2 text-center'>
+                        <Link className="nav-link active col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                    </div>
 
-                    {/* Campo description oggetto product */}
-                    <Form.Group>
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control as='textarea' rows={5} placheholder='Product description' {...register('description', { required: true, maxLength: 255 })} />
-                    </Form.Group>
-
-                    {errors.description && <p style={{ color: 'red' }}><small>Description is required</small></p>}
-                    {errors.description?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Description should be less than 255 characters</small> </p>}
-
-                    {/* Campo price oggetto product */}
-                    <Form.Group>
-                        <Form.Label>Price</Form.Label>
-                        <Form.Control type="number" min="1" step="any" placheholder='Product price' {...register('price', { required: true })} />
-                    </Form.Group>
-
-                    {errors.price && <p style={{ color: 'red' }}><small>Price is required</small></p>}
-
-                    {/* Campo stock oggetto product */}
-                    <Form.Group>
-                        <Form.Label>Stock</Form.Label>
-                        <Form.Select placheholder='Product stock' {...register('stock', { required: true })} >
-                            <option value='1'>Yes</option>
-                            <option value='0'>No</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    {errors.stock && <p style={{ color: 'red' }}><small>Stock needs a value</small></p>}
-
-                    {/* Campo category_id oggetto product */}
-                    <Form.Group>
-                        <Form.Label>Category</Form.Label>
-                        <Form.Select placheholder='Product stock' {...register('category_id', { required: true })} >
-                            <option value='1'>Yes</option>
-                            <option value='0'>No</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    {errors.category_id && <p style={{ color: 'red' }}><small>Category is required</small></p>}
-
-                    <Form.Group>
-                        <Button as='sub' variant='primary' onClick={handleSubmit(updateProduct)}>Update product</Button>
-                    </Form.Group>
-                </Modal.Body>
-            </Modal>
-
-            <h1>Prodotti</h1>
-            <div className='container'>
-                <div className='row'>
-                    {
-                        products.map(
-                            (product, key) => (
-                                <Product key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteProduct(product.id) }} />
-                            )
-                        )
-                    }
-
+                    <div className='mb-3 p-2 text-center'>
+                        <Link className="nav-link active col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                    </div>
                 </div>
+                <div className='col-10 h-100 lm_inner_menu'>
+                    <div className='container p-2'>
+                        <h1>Prodotti</h1>
+                        <div className='row'>
+                            <Table bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Product Name</th>
+                                        <th>Product Description</th>
+                                        <th>Product Price</th>
+                                        <th>Product Stock</th>
+                                        <th>Product Category</th>
+                                        <th>Product Actions</th>
+                                    </tr>
+                                </thead>
+
+                                {
+                                    products.map(
+                                        (product, key) => (
+                                            <Product key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteProduct(product.id) }} />
+                                        )
+                                    )
+                                }
+
+                            </Table>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <Modal show={show} size='lg' onHide={closeModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            Update Product
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {/* Campo name oggetto product */}
+                        <Form.Group>
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control type='text' placheholder='Product name' {...register('name', { required: true, maxLength: 25 })} />
+                        </Form.Group>
+
+                        {errors.name && <p style={{ color: 'red' }}><small>Name is required</small></p>}
+                        {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
+
+                        {/* Campo description oggetto product */}
+                        <Form.Group>
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control as='textarea' rows={5} placheholder='Product description' {...register('description', { required: true, maxLength: 255 })} />
+                        </Form.Group>
+
+                        {errors.description && <p style={{ color: 'red' }}><small>Description is required</small></p>}
+                        {errors.description?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Description should be less than 255 characters</small> </p>}
+
+                        {/* Campo price oggetto product */}
+                        <Form.Group>
+                            <Form.Label>Price</Form.Label>
+                            <Form.Control type="number" min="1" step="any" placheholder='Product price' {...register('price', { required: true })} />
+                        </Form.Group>
+
+                        {errors.price && <p style={{ color: 'red' }}><small>Price is required</small></p>}
+
+                        {/* Campo stock oggetto product */}
+                        <Form.Group>
+                            <Form.Label>Stock</Form.Label>
+                            <Form.Select placheholder='Product stock' {...register('stock', { required: true })} >
+                                <option value='1'>Yes</option>
+                                <option value='0'>No</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        {errors.stock && <p style={{ color: 'red' }}><small>Stock needs a value</small></p>}
+
+                        {/* Campo category_id oggetto product */}
+                        <Form.Group>
+                            <Form.Label>Category</Form.Label>
+                            <Form.Select placheholder='Product stock' {...register('category_id', { required: true })} >
+                                <option value='1'>Yes</option>
+                                <option value='0'>No</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        {errors.category_id && <p style={{ color: 'red' }}><small>Category is required</small></p>}
+
+                        <Form.Group>
+                            <Button as='sub' variant='primary' onClick={handleSubmit(updateProduct)}>Update product</Button>
+                        </Form.Group>
+                    </Modal.Body>
+                </Modal>
+
+
+
+
             </div>
+
+
         </div>
     )
 }
