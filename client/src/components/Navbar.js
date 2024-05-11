@@ -36,7 +36,7 @@ const Navbar = () => {
                 </button>
             </div>
             <div className='col-2'>
-                <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div className="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                     <div className="navbar-nav">
                         {logged ? <LoggedInLinks /> : <LoggedOutLinks />}
                     </div>

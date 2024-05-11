@@ -22,10 +22,6 @@ const Product = props => {
             </tbody >
         </>
 
-
-        // <Button variant="primary" onClick={props.onClick}>Update</Button>
-        // <Button variant="danger" onClick={props.onDelete}>Delete</Button>
-
     )
 
 }

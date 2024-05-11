@@ -111,6 +111,7 @@ const LoggedInHome = () => {
             <div className='row'>
 
                 <div className='col-2 p-3 lm_menu d-flex flex-column'>
+                    <h3 className='font-weight-bold mb-3 p-2 text-center'>Menù</h3>
                     <div className='mb-3 p-2 text-center'>
                         <Link className="nav-link active col-2 lm_menu_voice" to="/create_product">Create Product</Link>
                     </div>
@@ -121,7 +122,15 @@ const LoggedInHome = () => {
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
                     <div className='container p-2'>
-                        <h1>Prodotti</h1>
+                        <div className='row p-2 justify-content-between'>
+                            <div className='col-2'>
+                                <h1>Products</h1>
+                            </div>
+                            <div className='col-2'>
+                                <Button variant="success my-2" to="/create_product">Add new product</Button>
+                            </div>
+                        </div>
+
                         <div className='row'>
                             <Table bordered hover>
                                 <thead>
