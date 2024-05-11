@@ -22,6 +22,7 @@ const Product = props => {
                         {props.category_id}
                     </Card.Text>
                     <Button variant="primary" onClick={props.onClick}>Update</Button>
+                    <Button variant="danger" onClick={props.onDelete}>Delete</Button>
                 </Card.Body>
                 <Card.Footer className="text-muted">2 days ago</Card.Footer>
             </Card >

@@ -21,9 +21,6 @@ const Login = () => {
 
     const loginUser = (data) => {
 
-        console.log(data.username)
-        console.log(data.password)
-
         const requestData = {
             method: 'POST',
             headers: {
@@ -35,9 +32,6 @@ const Login = () => {
         fetch('/auth/login', requestData)
             .then(res => res.json())
             .then(data => {
-                //setServerResponse(data.message)
-                //setShow(true)
-                console.log(data.access_token)
                 login(data.access_token)
                 navigate('/home')
             })

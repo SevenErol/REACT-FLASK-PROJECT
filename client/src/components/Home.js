@@ -29,6 +29,16 @@ const LoggedInHome = () => {
         }
     )
 
+    const getAllProducts = () => {
+        return (
+            fetch('/product/products')
+                .then(res => res.json())
+                .then(data => {
+                    setProducts(data)
+                })
+                .catch(err => console.log(err))
+        )
+    }
 
 
     const closeModal = () => {
@@ -52,10 +62,9 @@ const LoggedInHome = () => {
         )
     }
 
+    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
     const updateProduct = (data) => {
-
-        let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
         const requestData = {
             method: 'PUT',
@@ -71,6 +80,25 @@ const LoggedInHome = () => {
             .then(data => {
                 const reload = window.location.reload()
                 reload()
+            }
+            )
+            .catch(err => console.log(err))
+    }
+
+    const deleteProduct = (id) => {
+
+        const requestData = {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${JSON.parse(token)}`
+            }
+        }
+
+        fetch(`/product/product/${id}`, requestData)
+            .then(res => res.json)
+            .then(data => {
+                getAllProducts()
             }
             )
             .catch(err => console.log(err))
@@ -147,7 +175,7 @@ const LoggedInHome = () => {
                     {
                         products.map(
                             (product, key) => (
-                                <Product key={key} {...product} onClick={() => { showModal(product.id) }} />
+                                <Product key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteProduct(product.id) }} />
                             )
                         )
                     }
