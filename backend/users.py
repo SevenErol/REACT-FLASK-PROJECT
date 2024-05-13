@@ -73,13 +73,20 @@ class UserResource(Resource):
     # @users_ns.marshal_with(user_model)
     # @jwt_required()
     # def put(self,id):
-    #     #aggiorna un prodotto
-    #     product_to_update = User.query.get_or_404(id)
+
     #     data = request.get_json()
+    #     #aggiorna uno User
+    #     user_to_update = User.query.get_or_404(id)
+    #     old_password = data.get('old_password')
 
-    #     product_to_update.update(data.get('name'),data.get('description'),data.get('price'),data.get('stock'),data.get('category_id'))
+    #     if user_to_update and check_password_hash(user_to_update.password, old_password):
+    #         password = data.get('password')
+    #         user_to_update.update(generate_password_hash(password))
+    #         user_to_update.save()
 
-    #     return product_to_update
+    #         return make_response(jsonify({"message": "User updated successfully"}), 201)
+    #     else:
+    #         return make_response(jsonify({"message": "Old password is not correct"}))
     
     @users_ns.marshal_with(user_model)
     @jwt_required()

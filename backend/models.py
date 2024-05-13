@@ -19,6 +19,9 @@ class User(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    def update(self, password):
+        self.password = password
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)

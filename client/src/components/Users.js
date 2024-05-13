@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth'
-import Product from './Product'
+import User from './User'
 import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 
 const LoggedInHome = () => {
 
-    const [products, setProducts] = useState([])
+    const [users, setUsers] = useState([])
     const [show, setShow] = useState(false)
-    const [productId, setProductId] = useState(0)
+    const [userId, setUserId] = useState(0)
 
     const {
         register,
@@ -20,10 +20,10 @@ const LoggedInHome = () => {
 
     useEffect(
         () => {
-            fetch('/product/products')
+            fetch('/user/users')
                 .then(res => res.json())
                 .then(data => {
-                    setProducts(data)
+                    setUsers(data)
                 })
                 .catch(err => console.log(err))
         }, []
@@ -37,16 +37,15 @@ const LoggedInHome = () => {
 
     const showModal = (id) => {
         setShow(true)
-        setProductId(id)
+        setUserId(id)
 
-        products.map(
-            (product, key) => {
-                if (product.id === id) {
-                    setValue('name', product.name)
-                    setValue('description', product.description)
-                    setValue('price', product.price)
-                    setValue('stock', product.stock)
-                    setValue('category_id', product.category_id)
+        users.map(
+            (user, key) => {
+                if (user.id === id) {
+                    setValue('username', user.username)
+                    setValue('email', user.email)
+                    setValue('password', user.password)
+
                 }
             }
         )
@@ -68,7 +67,7 @@ const LoggedInHome = () => {
             body: JSON.stringify(data)
         }
 
-        fetch(`/product/product/${productId}`, requestData)
+        fetch(`/user/user/${userId}`, requestData)
             .then(res => res.json)
             .then(data => {
                 const reload = window.location.reload()
@@ -79,14 +78,14 @@ const LoggedInHome = () => {
             .catch(err => console.log(err))
     }
 
-    const deleteProduct = (id) => {
+    const deleteUser = (id) => {
 
-        const getAllProducts = () => {
+        const getAllUsers = () => {
             return (
-                fetch('/product/products')
+                fetch('/user/users')
                     .then(res => res.json())
                     .then(data => {
-                        setProducts(data)
+                        setUsers(data)
                     })
                     .catch(err => console.log(err))
             )
@@ -100,10 +99,10 @@ const LoggedInHome = () => {
             }
         }
 
-        fetch(`/product/product/${id}`, requestData)
+        fetch(`/user/user/${id}`, requestData)
             .then(res => res.json)
             .then(data => {
-                getAllProducts()
+                getAllUsers()
             }
             )
             .catch(err => console.log(err))
@@ -124,16 +123,12 @@ const LoggedInHome = () => {
                     <div className='mb-3 p-2 text-center'>
                         <Link className="col-2 lm_menu_voice" to="/create_product">Create Product</Link>
                     </div>
-
-                    <div className='mb-3 p-2 text-center'>
-                        <Link className="col-2 lm_menu_voice" to="/users">All users</Link>
-                    </div>
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
                     <div className='container p-2'>
                         <div className='row p-2 justify-content-between'>
                             <div className='col-2'>
-                                <h1>Products</h1>
+                                <h1>Users</h1>
                             </div>
                             <div className='col-2'>
                                 <Link className='btn btn-success' to="/create_product">Add new product</Link>
@@ -145,19 +140,17 @@ const LoggedInHome = () => {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Product Name</th>
-                                        <th>Product Description</th>
-                                        <th>Product Price</th>
-                                        <th>Product Stock</th>
-                                        <th>Product Category</th>
-                                        <th>Product Actions</th>
+                                        <th>User Name</th>
+                                        <th>User Email</th>
+                                        <th>User Password</th>
+                                        <th>User Actions</th>
                                     </tr>
                                 </thead>
 
                                 {
-                                    products.map(
+                                    users.map(
                                         (product, key) => (
-                                            <Product key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteProduct(product.id) }} />
+                                            <User key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteUser(product.id) }} />
                                         )
                                     )
                                 }
@@ -172,60 +165,39 @@ const LoggedInHome = () => {
                 <Modal show={show} size='lg' onHide={closeModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>
-                            Update Product
+                            Update User
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {/* Campo name oggetto product */}
                         <Form.Group>
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type='text' placheholder='Product name' {...register('name', { required: true, maxLength: 25 })} />
+                            <Form.Label>Username</Form.Label>
+                            <Form.Control type='text' placheholder='Product name' {...register('username', { required: true, maxLength: 25 })} />
                         </Form.Group>
 
-                        {errors.name && <p style={{ color: 'red' }}><small>Name is required</small></p>}
+                        {errors.username && <p style={{ color: 'red' }}><small>Username is required</small></p>}
                         {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
 
-                        {/* Campo description oggetto product */}
+                        {/* Campo email oggetto user */}
                         <Form.Group>
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control as='textarea' rows={5} placheholder='Product description' {...register('description', { required: true, maxLength: 255 })} />
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control as='text' {...register('email', { required: true, maxLength: 255 })} />
                         </Form.Group>
 
-                        {errors.description && <p style={{ color: 'red' }}><small>Description is required</small></p>}
-                        {errors.description?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Description should be less than 255 characters</small> </p>}
+                        {errors.email && <p style={{ color: 'red' }}><small>Email is required</small></p>}
 
-                        {/* Campo price oggetto product */}
+                        {/* Campo password oggetto user */}
                         <Form.Group>
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" min="1" step=".01" placheholder='Product price' {...register('price', { required: true })} />
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="passowrd" {...register('password', { required: true })} />
                         </Form.Group>
 
-                        {errors.price && <p style={{ color: 'red' }}><small>Price is required</small></p>}
+                        {errors.password && <p style={{ color: 'red' }}><small>Password is required</small></p>}
 
-                        {/* Campo stock oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Stock</Form.Label>
-                            <Form.Select placheholder='Product stock' {...register('stock', { required: true })} >
-                                <option value='1'>Yes</option>
-                                <option value='0'>No</option>
-                            </Form.Select>
-                        </Form.Group>
 
-                        {errors.stock && <p style={{ color: 'red' }}><small>Stock needs a value</small></p>}
-
-                        {/* Campo category_id oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Category</Form.Label>
-                            <Form.Select placheholder='Product stock' {...register('category_id', { required: true })} >
-                                <option value='1'>Yes</option>
-                                <option value='0'>No</option>
-                            </Form.Select>
-                        </Form.Group>
-
-                        {errors.category_id && <p style={{ color: 'red' }}><small>Category is required</small></p>}
 
                         <Form.Group>
-                            <Button as='sub' variant='primary' onClick={handleSubmit(updateProduct)}>Update product</Button>
+                            <Button as='sub' variant='primary'>Update user</Button>
                         </Form.Group>
                     </Modal.Body>
                 </Modal>
@@ -236,14 +208,14 @@ const LoggedInHome = () => {
 
 const LoggedOutHome = () => {
     return (
-        <div className='products'>
-            <h1>Prodotti Non Loggato</h1>
+        <div className='users'>
+            <h1>Utenti Non Loggato</h1>
             <Link className="btn btn-primary btn-lg btn-submit" to="/signup">Signup</Link>
         </div>
     )
 }
 
-const HomePage = () => {
+const Users = () => {
 
     const [logged] = useAuth()
     return (
@@ -253,4 +225,4 @@ const HomePage = () => {
     )
 }
 
-export default HomePage
+export default Users

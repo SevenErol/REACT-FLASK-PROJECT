@@ -8,6 +8,7 @@ import HomePage from './components/Home';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import CreateProduct from './components/CreateProduct';
+import Users from './components/Users';
 
 const App = () => {
 
@@ -20,6 +21,7 @@ const App = () => {
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/create_product" element={<CreateProduct />} />
+                    <Route path="/users" element={<Users />} />
                 </Routes>
             </div >
         </BrowserRouter>
