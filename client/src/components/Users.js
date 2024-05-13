@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 
 const LoggedInHome = () => {
 
+
     const [users, setUsers] = useState([])
     const [show, setShow] = useState(false)
     const [userId, setUserId] = useState(0)
@@ -18,17 +19,25 @@ const LoggedInHome = () => {
         formState: { errors }
     } = useForm()
 
-    useEffect(
-        () => {
+
+
+    const getAllUsers = () => {
+        return (
             fetch('/user/users')
                 .then(res => res.json())
                 .then(data => {
                     setUsers(data)
                 })
                 .catch(err => console.log(err))
+        )
+    }
+
+
+    useEffect(
+        () => {
+            getAllUsers()
         }, []
     )
-
 
 
     const closeModal = () => {
@@ -80,17 +89,6 @@ const LoggedInHome = () => {
 
     const deleteUser = (id) => {
 
-        const getAllUsers = () => {
-            return (
-                fetch('/user/users')
-                    .then(res => res.json())
-                    .then(data => {
-                        setUsers(data)
-                    })
-                    .catch(err => console.log(err))
-            )
-        }
-
         const requestData = {
             method: 'DELETE',
             headers: {
@@ -107,6 +105,7 @@ const LoggedInHome = () => {
             )
             .catch(err => console.log(err))
     }
+
 
 
     return (
@@ -158,9 +157,11 @@ const LoggedInHome = () => {
                             </Table>
 
 
+
                         </div>
                     </div>
                 </div>
+
 
                 <Modal show={show} size='lg' onHide={closeModal}>
                     <Modal.Header closeButton>
@@ -206,6 +207,12 @@ const LoggedInHome = () => {
     )
 }
 
+
+
+
+
+
+
 const LoggedOutHome = () => {
     return (
         <div className='users'>
@@ -226,3 +233,5 @@ const Users = () => {
 }
 
 export default Users
+
+

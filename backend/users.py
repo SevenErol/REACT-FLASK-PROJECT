@@ -1,4 +1,4 @@
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, render_template
 from flask_restx import Resource, Namespace, fields
 from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,6 +19,8 @@ user_model = users_ns.model(
     }
 )
 
+
+
 # Define the API
 
 @users_ns.route('/users')
@@ -27,6 +29,8 @@ class UsersResource(Resource):
     @users_ns.marshal_list_with(user_model)
     def get(self):
         #recupera tutti gli Users
+        # page = request.args.get('page', 1, type=int)
+        # per_page = request.args.get('per_page', 4, type=int)
         users = User.query.all()
         return users
     
