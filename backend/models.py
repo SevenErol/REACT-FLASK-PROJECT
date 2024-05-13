@@ -59,6 +59,29 @@ class Category(db.Model):
     name = db.Column(db.String(100), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def __repr__(self):
+        return f"<Category {self.name}>"
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+product_category = db.Table('product_categories',
+    db.Column('product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True),
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
+)
+
+# Define the ProductCategory model to represent the association table
+class ProductCategory(db.Model):
+    __tablename__ = 'product_category'
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), primary_key=True)
+
+
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
