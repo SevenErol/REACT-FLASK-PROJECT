@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth'
 import User from './User'
-import { Modal, Form, Button, Table } from 'react-bootstrap'
+import { Modal, Form, Button, Table, Row, Col } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import Searchbar from './Searchbar'
 
 const LoggedInHome = () => {
 
@@ -12,6 +13,9 @@ const LoggedInHome = () => {
     const [show, setShow] = useState(false)
     const [deleteshow, setDeleteShow] = useState(false)
     const [userId, setUserId] = useState(0)
+    const [searchbar, setSearchbar] = useState('')
+    const [test, setTest] = useState('')
+
 
     const {
         register,
@@ -20,7 +24,10 @@ const LoggedInHome = () => {
         formState: { errors }
     } = useForm()
 
-
+    const inputChangeHandler = (e) => {
+        const inputValue = e.target.value
+        setSearchbar(inputValue)
+    }
 
     const getAllUsers = () => {
         return (
@@ -33,13 +40,42 @@ const LoggedInHome = () => {
         )
     }
 
+    const filteredUsers = (search) => {
+
+        const object = {
+            "input": search
+        }
+
+        const requestData = {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${JSON.parse(token)}`
+            },
+            body: JSON.stringify(object)
+        }
+
+        fetch('/user/search', requestData)
+            .then(res => res.json())
+            .then(data => {
+                setUsers(data)
+            })
+            .catch(err => console.log(err))
+
+    }
+
+    const getAllUsersSearch = () => {
+        return (
+            filteredUsers(searchbar),
+            setSearchbar('')
+        )
+    }
 
     useEffect(
         () => {
             getAllUsers()
         }, []
     )
-
 
     const closeModal = () => {
         setShow(false)
@@ -141,9 +177,7 @@ const LoggedInHome = () => {
                             <div className='col-2'>
                                 <h1>Users</h1>
                             </div>
-                            <div className='col-2'>
-
-                            </div>
+                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllUsersSearch} />
                         </div>
 
                         <div className='row'>
@@ -221,7 +255,7 @@ const LoggedInHome = () => {
                 </Modal>
 
             </div>
-        </div>
+        </div >
     )
 }
 

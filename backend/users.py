@@ -19,6 +19,13 @@ user_model = users_ns.model(
     }
 )
 
+input_model = users_ns.model(
+    "Input",
+    {
+        "input": fields.String()
+    }
+)
+
 
 
 # Define the API
@@ -101,3 +108,15 @@ class UserResource(Resource):
         user_to_delete.delete()
 
         return user_to_delete
+    
+@users_ns.route('/search')
+class UsersResource(Resource):
+    @users_ns.marshal_with(user_model)
+    def post(self):
+        data = request.get_json()
+        input = data.get('input')
+        search = "%{}%".format(input)
+
+        users = User.query.filter(User.username.like(search)).all()
+
+        return users
