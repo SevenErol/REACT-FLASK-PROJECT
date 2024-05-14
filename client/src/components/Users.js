@@ -130,7 +130,7 @@ const LoggedInHome = () => {
                                 <h1>Users</h1>
                             </div>
                             <div className='col-2'>
-                                <Link className='btn btn-success' to="/create_product">Add new product</Link>
+
                             </div>
                         </div>
 
@@ -156,8 +156,6 @@ const LoggedInHome = () => {
 
                             </Table>
 
-
-
                         </div>
                     </div>
                 </div>
@@ -170,7 +168,7 @@ const LoggedInHome = () => {
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/* Campo name oggetto product */}
+                        {/* Campo name oggetto user */}
                         <Form.Group>
                             <Form.Label>Username</Form.Label>
                             <Form.Control type='text' placheholder='Product name' {...register('username', { required: true, maxLength: 25 })} />
@@ -182,20 +180,10 @@ const LoggedInHome = () => {
                         {/* Campo email oggetto user */}
                         <Form.Group>
                             <Form.Label>Email</Form.Label>
-                            <Form.Control as='text' {...register('email', { required: true, maxLength: 255 })} />
+                            <Form.Control type='text' {...register('email', { required: true, maxLength: 255 })} />
                         </Form.Group>
 
                         {errors.email && <p style={{ color: 'red' }}><small>Email is required</small></p>}
-
-                        {/* Campo password oggetto user */}
-                        <Form.Group>
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control type="passowrd" {...register('password', { required: true })} />
-                        </Form.Group>
-
-                        {errors.password && <p style={{ color: 'red' }}><small>Password is required</small></p>}
-
-
 
                         <Form.Group>
                             <Button as='sub' variant='primary'>Update user</Button>

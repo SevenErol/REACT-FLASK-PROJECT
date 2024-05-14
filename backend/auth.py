@@ -72,8 +72,11 @@ class Login(Resource):
             refresh_token = create_refresh_token(identity=db_user.username)
 
             return make_response( jsonify(
-                {"access_token": access_token, "refresh_token": refresh_token}
+                {"access_token": access_token, "refresh_token": refresh_token, "message": "User logged in successfully"}
             ), 200)
+        else:
+            return jsonify({"message": f"Incorrect username or password"})
+            
 
 @auth_ns.route('/refresh')
 class RefreshResource(Resource):

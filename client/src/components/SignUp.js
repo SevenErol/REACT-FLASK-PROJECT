@@ -56,7 +56,7 @@ const SignUp = () => {
                 <div className='form lm_form'>
                     {show ?
                         <>
-                            <Alert variant="success" onClose={() => setShow(false)} dismissible>
+                            <Alert variant={serverResponse.includes('already') ? 'danger' : 'success'} onClose={() => setShow(false)} dismissible>
                                 <p>{serverResponse}</p>
                             </Alert>
 
@@ -100,7 +100,7 @@ const SignUp = () => {
                         </Form.Group>
 
                         {errors.confirmPassword && <p style={{ color: 'red' }}><small>Confirm Password is required</small></p>}
-                        {errors.confirmPassword?.type === 'minLength' && <p style={{ color: 'red' }}><small>Min characters should be 25</small></p>}
+                        {errors.confirmPassword?.type === 'minLength' && <p style={{ color: 'red' }}><small>Min characters should be 8</small></p>}
 
                         <Form.Group>
                             <Button className='mb-2' as='sub' variant='primary' onClick={handleSubmit(submitForm)}>Signup</Button>

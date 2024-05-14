@@ -237,7 +237,12 @@ const LoggedInHome = () => {
 const LoggedOutHome = () => {
     return (
         <div className='products'>
-            <h1>Prodotti Non Loggato</h1>
+            <div className='container-fluid lm_main'>
+                <div className='row h-100 justify-content-center align-items-center'>
+                    <h1 className='text-center'>Authentication Failed</h1>
+                </div>
+            </div>
+
             <Link className="btn btn-primary btn-lg btn-submit" to="/signup">Signup</Link>
         </div>
     )
