@@ -80,3 +80,15 @@ class ProductResource(Resource):
         product_to_delete.delete()
 
         return product_to_delete
+
+@products_ns.route('/search')
+class UsersResource(Resource):
+    @products_ns.marshal_with(product_model)
+    def post(self):
+        data = request.get_json()
+        input = data.get('input')
+        search = "%{}%".format(input)
+
+        users = Product.query.filter(Product.name.like(search)).all()
+
+        return users

@@ -4,6 +4,7 @@ import { useAuth } from '../auth'
 import Product from './Product'
 import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import Searchbar from './Searchbar'
 
 const LoggedInHome = () => {
 
@@ -11,6 +12,7 @@ const LoggedInHome = () => {
     const [show, setShow] = useState(false)
     const [productId, setProductId] = useState(0)
     const [deleteshow, setDeleteShow] = useState(false)
+    const [searchbar, setSearchbar] = useState('')
 
     const {
         register,
@@ -18,6 +20,43 @@ const LoggedInHome = () => {
         setValue,
         formState: { errors }
     } = useForm()
+
+
+    const inputChangeHandler = (e) => {
+        const inputValue = e.target.value
+        setSearchbar(inputValue)
+    }
+
+    const filteredProducts = (search) => {
+
+        const object = {
+            "input": search
+        }
+
+        const requestData = {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${JSON.parse(token)}`
+            },
+            body: JSON.stringify(object)
+        }
+
+        fetch('/product/search', requestData)
+            .then(res => res.json())
+            .then(data => {
+                setProducts(data)
+            })
+            .catch(err => console.log(err))
+
+    }
+
+    const getAllProductsSearch = () => {
+        return (
+            filteredProducts(searchbar),
+            setSearchbar('')
+        )
+    }
 
     useEffect(
         () => {
@@ -29,8 +68,6 @@ const LoggedInHome = () => {
                 .catch(err => console.log(err))
         }, []
     )
-
-
 
     const closeModal = () => {
         setShow(false)
@@ -146,9 +183,13 @@ const LoggedInHome = () => {
                             <div className='col-2'>
                                 <h1>Products</h1>
                             </div>
+
+                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllProductsSearch} />
+
                             <div className='col-2'>
                                 <Link className='btn btn-success' to="/create_product">Add new product</Link>
                             </div>
+
                         </div>
 
                         <div className='row'>

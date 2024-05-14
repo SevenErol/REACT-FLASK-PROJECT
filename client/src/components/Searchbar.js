@@ -1,7 +1,6 @@
 import { Form, Button, Row, Col } from 'react-bootstrap';
 
 const Searchbar = props => {
-
     return (
         <div className='col-4'>
             <Form>
@@ -9,7 +8,7 @@ const Searchbar = props => {
 
                     <Col xs="auto">
                         <Form.Control type="text"
-                            placeholder="Search"
+                            placeholder='Search'
                             className=" mr-sm-2" value={props.searchbar} onChange={props.onChange}>
 
                         </Form.Control>
