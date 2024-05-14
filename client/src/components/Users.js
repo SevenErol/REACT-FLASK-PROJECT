@@ -10,6 +10,7 @@ const LoggedInHome = () => {
 
     const [users, setUsers] = useState([])
     const [show, setShow] = useState(false)
+    const [deleteshow, setDeleteShow] = useState(false)
     const [userId, setUserId] = useState(0)
 
     const {
@@ -42,6 +43,15 @@ const LoggedInHome = () => {
 
     const closeModal = () => {
         setShow(false)
+    }
+
+    const closeModalDelete = () => {
+        setDeleteShow(false)
+    }
+
+    const deleteModal = (id) => {
+        setDeleteShow(true)
+        setUserId(id)
     }
 
     const showModal = (id) => {
@@ -89,6 +99,7 @@ const LoggedInHome = () => {
 
     const deleteUser = (id) => {
 
+
         const requestData = {
             method: 'DELETE',
             headers: {
@@ -101,6 +112,7 @@ const LoggedInHome = () => {
             .then(res => res.json)
             .then(data => {
                 getAllUsers()
+                setDeleteShow(false)
             }
             )
             .catch(err => console.log(err))
@@ -149,7 +161,7 @@ const LoggedInHome = () => {
                                 {
                                     users.map(
                                         (product, key) => (
-                                            <User key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteUser(product.id) }} />
+                                            <User key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteModal(product.id) }} />
                                         )
                                     )
                                 }
@@ -190,6 +202,24 @@ const LoggedInHome = () => {
                         </Form.Group>
                     </Modal.Body>
                 </Modal>
+
+                <Modal show={deleteshow} size='lg' onHide={closeModalDelete}>
+
+                    <Modal.Header closeButton>
+                        <Modal.Title>Warning: Irreversible Action</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <p>Are you sure you want to proceed? This action is irreversible and cannot be undone. Take a moment to consider the consequences before confirming. Once initiated, all associated data and changes will be permanent. If you're certain about your decision, proceed cautiously.</p>
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={closeModalDelete}>Close</Button>
+                        <Button variant="danger" onClick={() => { deleteUser(userId) }}>Confirm delete</Button>
+                    </Modal.Footer>
+
+                </Modal>
+
             </div>
         </div>
     )
