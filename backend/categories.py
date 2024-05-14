@@ -30,44 +30,40 @@ class CategoriesResource(Resource):
         #crea nuovo Prodotto
         data = request.get_json()
 
-        new_product = Product(
-            name = data.get('name'),
-            description = data.get('description'),
-            price = data.get('price'),
-            stock = data.get('stock'),
-            category_id = data.get('category_id')
+        new_category = Category(
+            name = data.get('name')
         )
         
-        new_product.save()
+        new_category.save()
 
-        return new_product, 201
+        return new_category, 201
 
-@categories_ns.route('/product/<int:id>')
+@categories_ns.route('/category/<int:id>')
 class ProductResource(Resource):
     @categories_ns.marshal_with(category_model)
     def get(self,id):
-        #recupera un Prodotto tramite id
-        product = Product.query.get_or_404(id)
+        #recupera una Categoria tramite id
+        category = Category.query.get_or_404(id)
 
-        return product
+        return category
     
     @categories_ns.marshal_with(category_model)
     @jwt_required()
     def put(self,id):
-        #aggiorna un prodotto
-        product_to_update = Product.query.get_or_404(id)
+        #aggiorna una categoria
+        category_to_update = Category.query.get_or_404(id)
         data = request.get_json()
 
-        product_to_update.update(data.get('name'),data.get('description'),data.get('price'),data.get('stock'),data.get('category_id'))
+        category_to_update.update(data.get('name'))
 
-        return product_to_update
+        return category_to_update
     
     @categories_ns.marshal_with(category_model)
     @jwt_required()
     def delete(self,id):
-        #elimina un prodotto
-        product_to_delete = Product.query.get_or_404(id)
+        #elimina una categoria
+        category_to_delete = Category.query.get_or_404(id)
 
-        product_to_delete.delete()
+        category_to_delete.delete()
 
-        return product_to_delete
+        return category_to_delete
