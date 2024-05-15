@@ -8,12 +8,16 @@ const Product = props => {
 
     useEffect(
         () => {
-            fetch(`/category/category/${props.category_id}`)
-                .then(res => res.json())
-                .then(data => {
-                    setCategories(data)
-                })
-                .catch(err => console.log(err))
+            if (props.category_id !== null) {
+                fetch(`/category/category/${props.category_id}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        setCategories(data)
+                    })
+                    .catch(err => console.log(err))
+            } else {
+                setCategories({ 'name': 'Nessuna categoria' })
+            }
         }, []
     )
 
@@ -27,7 +31,7 @@ const Product = props => {
                     <td>{props.description}</td>
                     <td>{props.price}</td>
                     <td>
-                        <div className={props.stock == 1 ? 'dot_success' : 'dot_danger'}></div>
+                        <div className={props.stock === 1 ? 'dot_success' : 'dot_danger'}></div>
                     </td>
                     <td>{categories.name}</td>
                     <td>

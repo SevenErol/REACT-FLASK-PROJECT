@@ -32,7 +32,6 @@ const Login = () => {
         fetch('/auth/login', requestData)
             .then(res => res.json())
             .then(data => {
-                console.log(data)
                 login(data.access_token)
                 navigate('/home')
 

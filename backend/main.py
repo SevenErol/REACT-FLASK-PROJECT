@@ -11,20 +11,21 @@ from categories import categories_ns
 from flask_cors import CORS
 from config import DevConfig
 
-def create_app(config):
+
+def create_app():
 
     app = Flask(__name__)
-    app.config.from_object(config)
+    app.config.from_object(DevConfig)
 
     CORS(app)
 
     db.init_app(app)
 
-    migrate = Migrate(app,db)
+    migrate = Migrate(app, db)
 
     JWTManager(app)
 
-    api = Api(app, doc='/docs')
+    api = Api(app, doc="/docs")
     api.add_namespace(products_ns)
     api.add_namespace(auth_ns)
     api.add_namespace(users_ns)
@@ -38,12 +39,13 @@ def create_app(config):
             "Category": Category,
             "Order": Order,
             "OrderItem": OrderItem,
-            "User": User
+            "User": User,
         }
 
     return app
 
-'''
+
+"""
 
 category_model = api.model(
     "Category",
@@ -71,4 +73,4 @@ class HelloResource(Resource):
 
 if __name__ == '__main__':
     app.run()
-'''    
+"""
