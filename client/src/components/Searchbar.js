@@ -14,7 +14,7 @@ const Searchbar = props => {
                         </Form.Control>
                     </Col>
                     <Col xs="auto">
-                        <Button variant='primary' onClick={props.onClick}>Submit</Button>
+                        <Button variant='primary' onClick={props.onClick}>Search</Button>
                     </Col>
                 </Row>
             </Form>

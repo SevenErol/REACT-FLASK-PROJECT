@@ -9,6 +9,8 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import CreateProduct from './components/CreateProduct';
 import Users from './components/Users';
+import Categories from './components/Categories';
+import CreateCategory from './components/CreateCategory';
 
 const App = () => {
 
@@ -22,6 +24,8 @@ const App = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/create_product" element={<CreateProduct />} />
                     <Route path="/users" element={<Users />} />
+                    <Route path="/categories" element={<Categories />} />
+                    <Route path="/create_category" element={<CreateCategory />} />
                 </Routes>
             </div >
         </BrowserRouter>

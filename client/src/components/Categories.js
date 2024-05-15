@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth'
-import User from './User'
+import Category from './Category'
 import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import Searchbar from './Searchbar'
@@ -9,16 +9,17 @@ import Searchbar from './Searchbar'
 const LoggedInHome = () => {
 
 
-    const [users, setUsers] = useState([])
+    const [categories, setCategories] = useState([])
     const [show, setShow] = useState(false)
     const [deleteshow, setDeleteShow] = useState(false)
-    const [userId, setUserId] = useState(0)
+    const [categoryId, setCategoryId] = useState(0)
     const [searchbar, setSearchbar] = useState('')
 
 
     const {
         register,
         setValue,
+        handleSubmit,
         formState: { errors }
     } = useForm()
 
@@ -27,18 +28,18 @@ const LoggedInHome = () => {
         setSearchbar(inputValue)
     }
 
-    const getAllUsers = () => {
+    const getAllCategories = () => {
         return (
-            fetch('/user/users')
+            fetch('/category/categories')
                 .then(res => res.json())
                 .then(data => {
-                    setUsers(data)
+                    setCategories(data)
                 })
                 .catch(err => console.log(err))
         )
     }
 
-    const filteredUsers = (search) => {
+    const filteredCategories = (search) => {
 
         const object = {
             "input": search
@@ -53,25 +54,25 @@ const LoggedInHome = () => {
             body: JSON.stringify(object)
         }
 
-        fetch('/user/search', requestData)
+        fetch('/category/search', requestData)
             .then(res => res.json())
             .then(data => {
-                setUsers(data)
+                setCategories(data)
             })
             .catch(err => console.log(err))
 
     }
 
-    const getAllUsersSearch = () => {
+    const getAllCategoriesSearch = () => {
         return (
-            filteredUsers(searchbar),
+            filteredCategories(searchbar),
             setSearchbar('')
         )
     }
 
     useEffect(
         () => {
-            getAllUsers()
+            getAllCategories()
         }, []
     )
 
@@ -85,19 +86,17 @@ const LoggedInHome = () => {
 
     const deleteModal = (id) => {
         setDeleteShow(true)
-        setUserId(id)
+        setCategoryId(id)
     }
 
     const showModal = (id) => {
         setShow(true)
-        setUserId(id)
+        setCategoryId(id)
 
-        users.map(
-            (user, key) => {
-                if (user.id === id) {
-                    setValue('username', user.username)
-                    setValue('email', user.email)
-                    setValue('password', user.password)
+        categories.map(
+            (category, key) => {
+                if (category.id === id) {
+                    setValue('name', category.name)
 
                 }
             }
@@ -106,7 +105,32 @@ const LoggedInHome = () => {
 
     let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
-    const deleteUser = (id) => {
+    const updateCategory = (data) => {
+
+        console.log(data)
+        console.log(token)
+
+        const requestData = {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': `Bearer ${JSON.parse(token)}`
+            },
+            body: JSON.stringify(data)
+        }
+
+        fetch(`/category/category/${categoryId}`, requestData)
+            .then(res => res.json)
+            .then(data => {
+                const reload = window.location.reload()
+                reload()
+
+            }
+            )
+            .catch(err => console.log(err))
+    }
+
+    const deleteCategory = (id) => {
 
 
         const requestData = {
@@ -117,10 +141,10 @@ const LoggedInHome = () => {
             }
         }
 
-        fetch(`/user/user/${id}`, requestData)
+        fetch(`/category/category/${id}`, requestData)
             .then(res => res.json)
             .then(data => {
-                getAllUsers()
+                getAllCategories()
                 setDeleteShow(false)
             }
             )
@@ -130,7 +154,7 @@ const LoggedInHome = () => {
 
 
     return (
-        <div className='products container-fluid lm_main'>
+        <div className='categories container-fluid lm_main'>
 
             <div className='row'>
 
@@ -148,9 +172,12 @@ const LoggedInHome = () => {
                     <div className='container p-2'>
                         <div className='row p-2 justify-content-between'>
                             <div className='col-2'>
-                                <h1>Users</h1>
+                                <h1>Categories</h1>
                             </div>
-                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllUsersSearch} />
+                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllCategoriesSearch} />
+                            <div className='col-2'>
+                                <Link className='btn btn-success' to="/create_category">Add new category</Link>
+                            </div>
                         </div>
 
                         <div className='row'>
@@ -158,17 +185,15 @@ const LoggedInHome = () => {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>User Name</th>
-                                        <th>User Email</th>
-                                        <th>User Password</th>
+                                        <th>Category Name</th>
                                         <th>User Actions</th>
                                     </tr>
                                 </thead>
 
                                 {
-                                    users.map(
-                                        (product, key) => (
-                                            <User key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteModal(product.id) }} />
+                                    categories.map(
+                                        (category, key) => (
+                                            <Category key={key} {...category} onClick={() => { showModal(category.id) }} onDelete={() => { deleteModal(category.id) }} />
                                         )
                                     )
                                 }
@@ -183,29 +208,22 @@ const LoggedInHome = () => {
                 <Modal show={show} size='lg' onHide={closeModal}>
                     <Modal.Header closeButton>
                         <Modal.Title>
-                            Update User
+                            Update Category
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/* Campo name oggetto user */}
+                        {/* Campo name oggetto category */}
                         <Form.Group>
-                            <Form.Label>Username</Form.Label>
-                            <Form.Control type='text' placheholder='Product name' {...register('username', { required: true, maxLength: 25 })} />
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control className='mb-2' type='text' placheholder='Category name' {...register('name', { required: true, maxLength: 25 })} />
                         </Form.Group>
 
-                        {errors.username && <p style={{ color: 'red' }}><small>Username is required</small></p>}
+                        {errors.name && <p style={{ color: 'red' }}><small>Category name is required</small></p>}
                         {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
 
-                        {/* Campo email oggetto user */}
-                        <Form.Group>
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control type='text' {...register('email', { required: true, maxLength: 255 })} />
-                        </Form.Group>
-
-                        {errors.email && <p style={{ color: 'red' }}><small>Email is required</small></p>}
 
                         <Form.Group>
-                            <Button as='sub' variant='primary'>Update user</Button>
+                            <Button as='sub' variant='primary' onClick={handleSubmit(updateCategory)}>Update category</Button>
                         </Form.Group>
                     </Modal.Body>
                 </Modal>
@@ -222,7 +240,7 @@ const LoggedInHome = () => {
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={closeModalDelete}>Close</Button>
-                        <Button variant="danger" onClick={() => { deleteUser(userId) }}>Confirm delete</Button>
+                        <Button variant="danger" onClick={() => { deleteCategory(categoryId) }}>Confirm delete</Button>
                     </Modal.Footer>
 
                 </Modal>
@@ -241,13 +259,13 @@ const LoggedInHome = () => {
 const LoggedOutHome = () => {
     return (
         <div className='users'>
-            <h1>Utenti Non Loggato</h1>
+            <h1>Categorie Non Loggato</h1>
             <Link className="btn btn-primary btn-lg btn-submit" to="/signup">Signup</Link>
         </div>
     )
 }
 
-const Users = () => {
+const Categories = () => {
 
     const [logged] = useAuth()
     return (
@@ -257,6 +275,6 @@ const Users = () => {
     )
 }
 
-export default Users
+export default Categories
 
 

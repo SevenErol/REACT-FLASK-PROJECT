@@ -67,3 +67,15 @@ class ProductResource(Resource):
         category_to_delete.delete()
 
         return category_to_delete
+
+@categories_ns.route('/search')
+class CategoriesResource(Resource):
+    @categories_ns.marshal_with(category_model)
+    def post(self):
+        data = request.get_json()
+        input = data.get('input')
+        search = "%{}%".format(input)
+
+        categories = Category.query.filter(Category.name.like(search)).all()
+
+        return categories

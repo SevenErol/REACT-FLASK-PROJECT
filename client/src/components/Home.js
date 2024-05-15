@@ -170,7 +170,7 @@ const LoggedInHome = () => {
                     </div>
 
                     <div className='mb-3 p-2 text-center'>
-                        <Link className="col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                        <Link className="col-2 lm_menu_voice" to="/categories">All categories</Link>
                     </div>
 
                     <div className='mb-3 p-2 text-center'>
