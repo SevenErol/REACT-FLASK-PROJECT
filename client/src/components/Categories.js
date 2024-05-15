@@ -186,7 +186,7 @@ const LoggedInHome = () => {
                                     <tr>
                                         <th>#</th>
                                         <th>Category Name</th>
-                                        <th>User Actions</th>
+                                        <th>Category Actions</th>
                                     </tr>
                                 </thead>
 

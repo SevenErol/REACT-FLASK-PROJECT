@@ -13,6 +13,7 @@ const LoggedInHome = () => {
     const [productId, setProductId] = useState(0)
     const [deleteshow, setDeleteShow] = useState(false)
     const [searchbar, setSearchbar] = useState('')
+    const [categories, setCategories] = useState([])
 
     const {
         register,
@@ -69,6 +70,17 @@ const LoggedInHome = () => {
         }, []
     )
 
+    useEffect(
+        () => {
+            fetch('/category/categories')
+                .then(res => res.json())
+                .then(data => {
+                    setCategories(data)
+                })
+                .catch(err => console.log(err))
+        }, []
+    )
+
     const closeModal = () => {
         setShow(false)
     }
@@ -104,7 +116,6 @@ const LoggedInHome = () => {
     const updateProduct = (data) => {
 
         console.log(data)
-        console.log(token)
 
         const requestData = {
             method: 'PUT',
@@ -266,8 +277,14 @@ const LoggedInHome = () => {
                         <Form.Group>
                             <Form.Label>Category</Form.Label>
                             <Form.Select placheholder='Product stock' {...register('category_id', { required: true })} >
-                                <option value='1'>Yes</option>
-                                <option value='0'>No</option>
+                                <option disabled>Select a category</option>
+                                {
+                                    categories.map(
+                                        (category, key) => (
+                                            <option key={key} value={category.id}>{category.name}</option>
+                                        )
+                                    )
+                                }
                             </Form.Select>
                         </Form.Group>
 

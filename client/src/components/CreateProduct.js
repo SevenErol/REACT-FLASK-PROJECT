@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 const CreateProduct = () => {
+
+    const [categories, setCategories] = useState([])
 
     const {
         register,
@@ -39,6 +41,17 @@ const CreateProduct = () => {
 
 
     }
+
+    useEffect(
+        () => {
+            fetch('/category/categories')
+                .then(res => res.json())
+                .then(data => {
+                    setCategories(data)
+                })
+                .catch(err => console.log(err))
+        }, []
+    )
 
 
     return (
@@ -90,8 +103,13 @@ const CreateProduct = () => {
                         <Form.Label>Category</Form.Label>
                         <Form.Select {...register('category_id', { required: true })} >
                             <option disabled>Select a category</option>
-                            <option value='1'>Yes</option>
-                            <option value='0'>No</option>
+                            {
+                                categories.map(
+                                    (category, key) => (
+                                        <option value={category.id}>{category.name}</option>
+                                    )
+                                )
+                            }
                         </Form.Select>
                     </Form.Group>
 
