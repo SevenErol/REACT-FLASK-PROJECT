@@ -11,10 +11,10 @@ from categories import categories_ns
 from flask_cors import CORS
 from config import DevConfig
 
-def create_app():
+def create_app(config):
 
     app = Flask(__name__)
-    app.config.from_object(DevConfig)
+    app.config.from_object(config)
 
     CORS(app)
 
