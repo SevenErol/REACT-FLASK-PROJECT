@@ -137,11 +137,11 @@ const LoggedInHome = () => {
                 <div className='col-2 p-3 lm_menu d-flex flex-column'>
                     <h3 className='font-weight-bold mb-3 p-2 text-center'>Menù</h3>
                     <div className='mb-3 p-2 text-center'>
-                        <Link className="col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                        <Link className="col-2 lm_menu_voice" to="/home">All products</Link>
                     </div>
 
                     <div className='mb-3 p-2 text-center'>
-                        <Link className="col-2 lm_menu_voice" to="/create_product">Create Product</Link>
+                        <Link className="col-2 lm_menu_voice" to="/categories">All categories</Link>
                     </div>
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
