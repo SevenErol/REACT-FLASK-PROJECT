@@ -262,6 +262,78 @@ class APITestCase(unittest.TestCase):
         status_code = delete_response.status_code
         self.assertEqual(status_code, 200)
 
+    def test_search_products(self):
+        signup_response = self.client.post('/auth/signup',
+            json = {
+                "username":"testuser",
+                "email": "testuser@mail.com",
+                "password": "password"
+                }
+        )
+        login_response = self.client.post('/auth/login',
+            json = {
+                "username":"testuser",
+                "password": "password"
+                }
+        )
+        access_token = login_response.json["access_token"]
+        search_response = self.client.post('/product/search',
+            json = {
+	                "input": "test"
+            },
+            headers = {"Authorization": f"Bearer {access_token}"}
+        )
+        status_code = search_response.status_code
+        self.assertEqual(status_code, 200)
+
+    def test_search_categories(self):
+        signup_response = self.client.post('/auth/signup',
+            json = {
+                "username":"testuser",
+                "email": "testuser@mail.com",
+                "password": "password"
+                }
+        )
+        login_response = self.client.post('/auth/login',
+            json = {
+                "username":"testuser",
+                "password": "password"
+                }
+        )
+        access_token = login_response.json["access_token"]
+        search_response = self.client.post('/category/search',
+            json = {
+	                "input": "test"
+            },
+            headers = {"Authorization": f"Bearer {access_token}"}
+        )
+        status_code = search_response.status_code
+        self.assertEqual(status_code, 200)
+
+    def test_search_users(self):
+        signup_response = self.client.post('/auth/signup',
+            json = {
+                "username":"testuser",
+                "email": "testuser@mail.com",
+                "password": "password"
+                }
+        )
+        login_response = self.client.post('/auth/login',
+            json = {
+                "username":"testuser",
+                "password": "password"
+                }
+        )
+        access_token = login_response.json["access_token"]
+        search_response = self.client.post('/user/search',
+            json = {
+	                "input": "test"
+            },
+            headers = {"Authorization": f"Bearer {access_token}"}
+        )
+        status_code = search_response.status_code
+        self.assertEqual(status_code, 200)
+
     def tearDown(self):
         with self.app.app_context():
             db.session.remove()
