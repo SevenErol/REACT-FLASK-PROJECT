@@ -5,6 +5,7 @@ import Product from './Product'
 import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import Searchbar from './Searchbar'
+import axios from 'axios'
 
 const LoggedInHome = () => {
 
@@ -61,12 +62,13 @@ const LoggedInHome = () => {
 
     useEffect(
         () => {
-            fetch('/product/products')
-                .then(res => res.json())
-                .then(data => {
-                    setProducts(data)
+            axios.get('http://127.0.0.1:5000/product/products')
+                .then(res => {
+                    console.log(res.data)
+                    setProducts(res.data)
                 })
                 .catch(err => console.log(err))
+
         }, []
     )
 
