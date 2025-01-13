@@ -19,7 +19,6 @@ const App = () => {
             <div className="container-fluid p-0 m-0">
                 <Navbar />
                 <Routes>
-                    <Route path="/" element={<Categories />} />
                     <Route path="/home" element={<HomePage />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />

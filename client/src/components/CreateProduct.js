@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const CreateProduct = () => {
 
@@ -19,35 +20,32 @@ const CreateProduct = () => {
     const createProduct = (data) => {
         const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
-        const requestData = {
-            method: 'POST',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(data)
+            }
         }
 
 
 
-        fetch('/product/products', requestData)
-            .then(res => res.json)
-            .then(data => {
+        axios.post('http://127.0.0.1:5000/product/products', data, headers)
+            .then((response) => {
                 reset()
                 navigate('/home')
-            }
-            )
-            .catch(err => console.log(err))
+            })
+            .catch((error) => {
+                console.error(error);
+            })
 
 
     }
 
     useEffect(
         () => {
-            fetch('/category/categories')
-                .then(res => res.json())
-                .then(data => {
-                    setCategories(data)
+            axios.get('http://127.0.0.1:5000/category/categories')
+                .then(res => {
+                    setCategories(res.data)
                 })
                 .catch(err => console.log(err))
         }, []

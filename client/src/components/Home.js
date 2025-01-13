@@ -9,6 +9,8 @@ import axios from 'axios'
 
 const LoggedInHome = () => {
 
+    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
+
     const [products, setProducts] = useState([])
     const [show, setShow] = useState(false)
     const [productId, setProductId] = useState(0)
@@ -35,21 +37,21 @@ const LoggedInHome = () => {
             "input": search
         }
 
-        const requestData = {
-            method: 'POST',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(object)
+            }
         }
 
-        fetch('/product/search', requestData)
-            .then(res => res.json())
-            .then(data => {
-                setProducts(data)
+        axios
+            .post('http://127.0.0.1:5000/product/search', object, headers)
+            .then((response) => {
+                setProducts(response.data);
             })
-            .catch(err => console.log(err))
+            .catch((error) => {
+                console.error(error);
+            });
 
     }
 
@@ -64,7 +66,6 @@ const LoggedInHome = () => {
         () => {
             axios.get('http://127.0.0.1:5000/product/products')
                 .then(res => {
-                    console.log(res.data)
                     setProducts(res.data)
                 })
                 .catch(err => console.log(err))
@@ -74,10 +75,9 @@ const LoggedInHome = () => {
 
     useEffect(
         () => {
-            fetch('/category/categories')
-                .then(res => res.json())
-                .then(data => {
-                    setCategories(data)
+            axios.get('http://127.0.0.1:5000/category/categories')
+                .then(res => {
+                    setCategories(res.data)
                 })
                 .catch(err => console.log(err))
         }, []
@@ -113,22 +113,18 @@ const LoggedInHome = () => {
         )
     }
 
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
-
     const updateProduct = (data) => {
 
-        console.log(data)
 
-        const requestData = {
-            method: 'PUT',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(data)
+            }
         }
 
-        fetch(`/product/product/${productId}`, requestData)
+        axios
+            .put(`http://127.0.0.1:5000/product/product/${productId}`, data, headers)
             .then(res => res.json)
             .then(data => {
                 const reload = window.location.reload()
@@ -141,27 +137,27 @@ const LoggedInHome = () => {
 
     const deleteProduct = (id) => {
 
+
+
         const getAllProducts = () => {
             return (
-                fetch('/product/products')
-                    .then(res => res.json())
-                    .then(data => {
-                        setProducts(data)
+                axios.get('http://127.0.0.1:5000/product/products')
+                    .then(res => {
+                        setProducts(res.data)
                         setDeleteShow(false)
                     })
                     .catch(err => console.log(err))
             )
         }
 
-        const requestData = {
-            method: 'DELETE',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
             }
         }
 
-        fetch(`/product/product/${id}`, requestData)
+        axios.delete(`/product/product/${id}`, headers)
             .then(res => res.json)
             .then(data => {
                 getAllProducts()
