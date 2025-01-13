@@ -3,6 +3,7 @@ import { Form, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { login } from '../auth'
+import axios from 'axios'
 
 
 const Login = () => {
@@ -16,23 +17,17 @@ const Login = () => {
 
     const navigate = useNavigate()
 
-    // const [username, setUsername] = useState('')
-    // const [password, setPassword] = useState('')
-
     const loginUser = (data) => {
 
-        const requestData = {
-            method: 'POST',
+        const headers = {
             headers: {
                 'content-type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            }
         }
 
-        fetch('/auth/login', requestData)
-            .then(res => res.json())
-            .then(data => {
-                login(data.access_token)
+        axios.post('http://127.0.0.1:5000/auth/login', data, headers)
+            .then(res => {
+                login(res.data.access_token)
                 navigate('/home')
 
             })

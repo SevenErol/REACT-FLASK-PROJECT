@@ -5,9 +5,11 @@ import Category from './Category'
 import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import Searchbar from './Searchbar'
+import axios from 'axios'
 
 const LoggedInHome = () => {
 
+    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
     const [categories, setCategories] = useState([])
     const [show, setShow] = useState(false)
@@ -30,10 +32,9 @@ const LoggedInHome = () => {
 
     const getAllCategories = () => {
         return (
-            fetch('/category/categories')
-                .then(res => res.json())
-                .then(data => {
-                    setCategories(data)
+            axios.get('http://127.0.0.1:5000/category/categories')
+                .then(res => {
+                    setCategories(res.data)
                 })
                 .catch(err => console.log(err))
         )
@@ -45,21 +46,21 @@ const LoggedInHome = () => {
             "input": search
         }
 
-        const requestData = {
-            method: 'POST',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(object)
+            }
         }
 
-        fetch('/category/search', requestData)
-            .then(res => res.json())
-            .then(data => {
-                setCategories(data)
+        axios
+            .post('http://127.0.0.1:5000/category/search', object, headers)
+            .then((response) => {
+                setCategories(response.data);
             })
-            .catch(err => console.log(err))
+            .catch((error) => {
+                console.error(error);
+            });
 
     }
 
@@ -103,23 +104,17 @@ const LoggedInHome = () => {
         )
     }
 
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
     const updateCategory = (data) => {
 
-        console.log(data)
-        console.log(token)
-
-        const requestData = {
-            method: 'PUT',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(data)
+            }
         }
 
-        fetch(`/category/category/${categoryId}`, requestData)
+        axios.put(`http://127.0.0.1:5000/category/category/${categoryId}`, data, headers)
             .then(res => res.json)
             .then(data => {
                 const reload = window.location.reload()
@@ -133,15 +128,14 @@ const LoggedInHome = () => {
     const deleteCategory = (id) => {
 
 
-        const requestData = {
-            method: 'DELETE',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
             }
         }
 
-        fetch(`/category/category/${id}`, requestData)
+        axios.delete(`http://127.0.0.1:5000/category/category/${id}`, headers)
             .then(res => res.json)
             .then(data => {
                 getAllCategories()

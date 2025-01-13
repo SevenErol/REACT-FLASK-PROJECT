@@ -4,9 +4,11 @@ import { useAuth } from '../auth'
 import User from './User'
 import { Modal, Button, Table } from 'react-bootstrap'
 import Searchbar from './Searchbar'
+import axios from 'axios'
 
 const LoggedInHome = () => {
 
+    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
     const [users, setUsers] = useState([])
     const [deleteshow, setDeleteShow] = useState(false)
@@ -21,10 +23,9 @@ const LoggedInHome = () => {
 
     const getAllUsers = () => {
         return (
-            fetch('/user/users')
-                .then(res => res.json())
-                .then(data => {
-                    setUsers(data)
+            axios.get('http://127.0.0.1:5000/user/users')
+                .then(res => {
+                    setUsers(res.data)
                 })
                 .catch(err => console.log(err))
         )
@@ -36,21 +37,20 @@ const LoggedInHome = () => {
             "input": search
         }
 
-        const requestData = {
-            method: 'POST',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(object)
+            }
         }
 
-        fetch('/user/search', requestData)
-            .then(res => res.json())
-            .then(data => {
-                setUsers(data)
+        axios.post('http://127.0.0.1:5000/user/search', object, headers)
+            .then((response) => {
+                setUsers(response.data);
             })
-            .catch(err => console.log(err))
+            .catch((error) => {
+                console.error(error);
+            });
 
     }
 
@@ -67,8 +67,6 @@ const LoggedInHome = () => {
         }, []
     )
 
-
-
     const closeModalDelete = () => {
         setDeleteShow(false)
     }
@@ -78,21 +76,17 @@ const LoggedInHome = () => {
         setUserId(id)
     }
 
-
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
-
     const deleteUser = (id) => {
 
 
-        const requestData = {
-            method: 'DELETE',
+        const headers = {
             headers: {
                 'content-type': 'application/json',
                 'Authorization': `Bearer ${JSON.parse(token)}`
             }
         }
 
-        fetch(`/user/user/${id}`, requestData)
+        axios.delete(`http://127.0.0.1:5000/user/user/${id}`, headers)
             .then(res => res.json)
             .then(data => {
                 getAllUsers()

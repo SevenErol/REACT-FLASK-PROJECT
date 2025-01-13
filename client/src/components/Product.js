@@ -1,5 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 
 const Product = props => {
@@ -9,10 +10,9 @@ const Product = props => {
     useEffect(
         () => {
             if (props.category_id !== null) {
-                fetch(`/category/category/${props.category_id}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        setCategories(data)
+                axios.get(`http://127.0.0.1:5000/category/category/${props.category_id}`)
+                    .then(res => {
+                        setCategories(res.data)
                     })
                     .catch(err => console.log(err))
             } else {

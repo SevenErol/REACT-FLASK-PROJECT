@@ -3,6 +3,7 @@ import { Form, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import Alert from 'react-bootstrap/Alert';
+import axios from 'axios'
 
 const SignUp = () => {
 
@@ -26,15 +27,13 @@ const SignUp = () => {
                 'password': data.password
             }
 
-            const requestData = {
-                method: 'post',
+            const headers = {
                 headers: {
                     'content-type': 'application/json'
-                },
-                body: JSON.stringify(body)
+                }
             }
 
-            fetch('/auth/signup', requestData)
+            axios.post('http://127.0.0.1:5000/auth/signup', body, headers)
                 .then(res => res.json())
                 .then(data => {
                     setServerResponse(data.message)
