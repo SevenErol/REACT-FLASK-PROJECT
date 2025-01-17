@@ -7,7 +7,7 @@ class User(db.Model):
     username = db.Column(db.String(25), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.Text(), nullable=False)
-    # created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     # orders = db.relationship('Order', backref='user', lazy=True)
 
     def __repr__(self):

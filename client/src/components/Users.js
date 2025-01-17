@@ -5,15 +5,21 @@ import User from './User'
 import { Modal, Button, Table } from 'react-bootstrap'
 import Searchbar from './Searchbar'
 import axios from 'axios'
+import Pagination from 'react-bootstrap/Pagination';
 
 const LoggedInHome = () => {
 
     let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
     const [users, setUsers] = useState([])
+    const [pages, setPage] = useState([])
+    const [total, setTotal] = useState(2)
+    const [lastPage, setLastPage] = useState(1)
     const [deleteshow, setDeleteShow] = useState(false)
     const [userId, setUserId] = useState(0)
     const [searchbar, setSearchbar] = useState('')
+    const [page, setCurrentpage] = useState(1)
+
 
 
     const inputChangeHandler = (e) => {
@@ -25,7 +31,56 @@ const LoggedInHome = () => {
         return (
             axios.get('http://127.0.0.1:5000/user/users')
                 .then(res => {
-                    setUsers(res.data)
+
+                    setUsers(res.data.items)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const pagedUsers = (page) => {
+        return (
+
+            axios.get('http://127.0.0.1:5000/user/users?page=' + page.toString())
+                .then(res => {
+                    setUsers(res.data.items)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getPagedUsers = (page) => {
+        return (
+            setCurrentpage(page),
+            pagedUsers(page)
+        )
+    }
+
+    const getPages = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/user/users')
+                .then(res => {
+                    setPage(res.data.all_pages)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getTotal = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/user/users')
+                .then(res => {
+                    setTotal(res.data.total)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getLastPage = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/user/users')
+                .then(res => {
+                    setLastPage(res.data.last_page)
                 })
                 .catch(err => console.log(err))
         )
@@ -64,6 +119,9 @@ const LoggedInHome = () => {
     useEffect(
         () => {
             getAllUsers()
+            getPages()
+            getTotal()
+            getLastPage()
         }, []
     )
 
@@ -145,6 +203,18 @@ const LoggedInHome = () => {
                             </Table>
 
                         </div>
+                        <Pagination>
+                            <Pagination.First />
+                            <Pagination.Prev />
+
+                            {pages.map((page, key) => (
+                                <Pagination.Item page={page} onClick={() => getPagedUsers(page)}>{page}</Pagination.Item>
+
+                            ))}
+
+                            <Pagination.Next />
+                            <Pagination.Last />
+                        </Pagination>
                     </div>
                 </div>
 
