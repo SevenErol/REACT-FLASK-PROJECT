@@ -19,7 +19,7 @@ const LoggedInHome = () => {
     const [userId, setUserId] = useState(0)
     const [searchbar, setSearchbar] = useState('')
     const [page, setCurrentpage] = useState(1)
-
+    const [active, setActive] = useState(1)
 
 
     const inputChangeHandler = (e) => {
@@ -52,7 +52,8 @@ const LoggedInHome = () => {
     const getPagedUsers = (page) => {
         return (
             setCurrentpage(page),
-            pagedUsers(page)
+            pagedUsers(page),
+            setActive(page)
         )
     }
 
@@ -204,16 +205,16 @@ const LoggedInHome = () => {
 
                         </div>
                         <Pagination>
-                            <Pagination.First />
-                            <Pagination.Prev />
+                            <Pagination.First page={1} onClick={() => getPagedUsers(1)} />
 
-                            {pages.map((page, key) => (
-                                <Pagination.Item page={page} onClick={() => getPagedUsers(page)}>{page}</Pagination.Item>
+                            {pages.length <= 10 ?
+                                pages.map((page, key) => (
+                                    <Pagination.Item active={active === page} page={page} onClick={() => getPagedUsers(page)}>{page}</Pagination.Item>
+                                ))
+                                : "nossir"}
 
-                            ))}
 
-                            <Pagination.Next />
-                            <Pagination.Last />
+                            <Pagination.Last page={lastPage} onClick={() => getPagedUsers(lastPage)} />
                         </Pagination>
                     </div>
                 </div>
@@ -239,10 +240,6 @@ const LoggedInHome = () => {
         </div >
     )
 }
-
-
-
-
 
 
 
