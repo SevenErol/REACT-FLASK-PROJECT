@@ -83,7 +83,7 @@ const LoggedInHome = () => {
         return (
             axios.get('http://127.0.0.1:5000/category/categories')
                 .then(res => {
-                    setCategories(res.data)
+                    setCategories(res.data.items)
                 })
                 .catch(err => console.log(err))
         )

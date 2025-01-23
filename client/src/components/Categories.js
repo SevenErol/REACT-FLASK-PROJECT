@@ -6,6 +6,7 @@ import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import Searchbar from './Searchbar'
 import axios from 'axios'
+import Pagination from 'react-bootstrap/Pagination';
 
 const LoggedInHome = () => {
 
@@ -16,6 +17,12 @@ const LoggedInHome = () => {
     const [deleteshow, setDeleteShow] = useState(false)
     const [categoryId, setCategoryId] = useState(0)
     const [searchbar, setSearchbar] = useState('')
+
+    const [pages, setPage] = useState([])
+    const [active, setActive] = useState(1)
+    const [page, setCurrentpage] = useState(1)
+    const [lastPage, setLastPage] = useState(1)
+    const [total, setTotal] = useState(2)
 
 
     const {
@@ -34,7 +41,7 @@ const LoggedInHome = () => {
         return (
             axios.get('http://127.0.0.1:5000/category/categories')
                 .then(res => {
-                    setCategories(res.data)
+                    setCategories(res.data.items)
                 })
                 .catch(err => console.log(err))
         )
@@ -56,7 +63,7 @@ const LoggedInHome = () => {
         axios
             .post('http://127.0.0.1:5000/category/search', object, headers)
             .then((response) => {
-                setCategories(response.data);
+                setCategories(response.data.items);
             })
             .catch((error) => {
                 console.error(error);
@@ -71,9 +78,60 @@ const LoggedInHome = () => {
         )
     }
 
+    const pagedCategories = (page) => {
+        return (
+
+            axios.get('http://127.0.0.1:5000/category/categories?page=' + page.toString())
+                .then(res => {
+                    setCategories(res.data.items)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getPagedCategories = (page) => {
+        return (
+            setCurrentpage(page),
+            pagedCategories(page),
+            setActive(page)
+        )
+    }
+
+    const getPages = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/category/categories')
+                .then(res => {
+                    setPage(res.data.all_pages)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getTotal = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/category/categories')
+                .then(res => {
+                    setTotal(res.data.total)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getLastPage = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/category/categories')
+                .then(res => {
+                    setLastPage(res.data.last_page)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
     useEffect(
         () => {
             getAllCategories()
+            getPages()
+            getTotal()
         }, []
     )
 
@@ -195,6 +253,16 @@ const LoggedInHome = () => {
                             </Table>
 
                         </div>
+                        <Pagination>
+                            <Pagination.First page={1} onClick={() => getPagedCategories(1)} />
+
+                            {pages.map((page, key) => (
+                                <Pagination.Item active={active === page} page={page} onClick={() => getPagedCategories(page)}>{page}</Pagination.Item>
+                            ))}
+
+
+                            <Pagination.Last page={lastPage} onClick={() => getPagedCategories(lastPage)} />
+                        </Pagination>
                     </div>
                 </div>
 
