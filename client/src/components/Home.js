@@ -6,6 +6,7 @@ import { Modal, Form, Button, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import Searchbar from './Searchbar'
 import axios from 'axios'
+import Pagination from 'react-bootstrap/Pagination';
 
 const LoggedInHome = () => {
 
@@ -17,6 +18,12 @@ const LoggedInHome = () => {
     const [deleteshow, setDeleteShow] = useState(false)
     const [searchbar, setSearchbar] = useState('')
     const [categories, setCategories] = useState([])
+
+    const [pages, setPage] = useState([])
+    const [active, setActive] = useState(1)
+    const [page, setCurrentpage] = useState(1)
+    const [lastPage, setLastPage] = useState(1)
+    const [total, setTotal] = useState(2)
 
     const {
         register,
@@ -62,24 +69,84 @@ const LoggedInHome = () => {
         )
     }
 
-    useEffect(
-        () => {
+    const getAllProducts = () => {
+        return (
             axios.get('http://127.0.0.1:5000/product/products')
                 .then(res => {
-                    setProducts(res.data)
+                    setProducts(res.data.items)
                 })
                 .catch(err => console.log(err))
+        )
+    }
 
-        }, []
-    )
-
-    useEffect(
-        () => {
+    const getAllCategories = () => {
+        return (
             axios.get('http://127.0.0.1:5000/category/categories')
                 .then(res => {
                     setCategories(res.data)
                 })
                 .catch(err => console.log(err))
+        )
+    }
+
+    const pagedProducts = (page) => {
+        return (
+
+            axios.get('http://127.0.0.1:5000/product/products?page=' + page.toString())
+                .then(res => {
+                    setProducts(res.data.items)
+                    console.log(res.data.items)
+                    console.log(page)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getPagedProducts = (page) => {
+        return (
+            setCurrentpage(page),
+            pagedProducts(page),
+            setActive(page)
+        )
+    }
+
+    const getPages = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/product/products')
+                .then(res => {
+                    setPage(res.data.all_pages)
+                    console.log(res.data.all_pages)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getTotal = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/product/products')
+                .then(res => {
+                    setTotal(res.data.total)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    const getLastPage = () => {
+        return (
+            axios.get('http://127.0.0.1:5000/product/products')
+                .then(res => {
+                    setLastPage(res.data.last_page)
+                })
+                .catch(err => console.log(err))
+        )
+    }
+
+    useEffect(
+        () => {
+            getAllProducts()
+            getAllCategories()
+            getPages()
+            getTotal()
         }, []
     )
 
@@ -137,19 +204,6 @@ const LoggedInHome = () => {
 
     const deleteProduct = (id) => {
 
-
-
-        const getAllProducts = () => {
-            return (
-                axios.get('http://127.0.0.1:5000/product/products')
-                    .then(res => {
-                        setProducts(res.data)
-                        setDeleteShow(false)
-                    })
-                    .catch(err => console.log(err))
-            )
-        }
-
         const headers = {
             headers: {
                 'content-type': 'application/json',
@@ -161,6 +215,7 @@ const LoggedInHome = () => {
             .then(res => res.json)
             .then(data => {
                 getAllProducts()
+                setDeleteShow(false)
             }
             )
             .catch(err => console.log(err))
@@ -224,6 +279,16 @@ const LoggedInHome = () => {
 
 
                         </div>
+                        <Pagination>
+                            <Pagination.First page={1} onClick={() => getPagedProducts(1)} />
+
+                            {pages.map((page, key) => (
+                                <Pagination.Item active={active === page} page={page} onClick={() => getPagedProducts(page)}>{page}</Pagination.Item>
+                            ))}
+
+
+                            <Pagination.Last page={lastPage} onClick={() => getPagedProducts(lastPage)} />
+                        </Pagination>
                     </div>
                 </div>
 

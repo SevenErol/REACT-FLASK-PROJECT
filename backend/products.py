@@ -1,7 +1,8 @@
-from flask import request
+from flask import request, jsonify
 from flask_restx import Resource, Namespace, fields
 from models import Product
 from flask_jwt_extended import jwt_required
+import math
 
 products_ns = Namespace("product", description="A namespace for our Products")
 
@@ -28,11 +29,50 @@ class HelloResource(Resource):
 @products_ns.route("/products")
 class ProductsResource(Resource):
 
-    @products_ns.marshal_list_with(product_model)
+    # @products_ns.marshal_list_with(paged_product_model)
     def get(self):
         # recupera tutti i Prodotti
-        products = Product.query.all()
-        return products
+
+        # products = Product.query.all()
+        # return products
+
+        page = request.args.get("page", default=1, type=int)
+        per_page = request.args.get("per_page", default=2, type=int)
+
+        pagination = Product.query.paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+
+        items = [
+            {
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price": product.price,
+                "stock": product.stock,
+                "created_at": product.created_at,
+                "category_id": product.category_id,
+            }
+            for product in pagination.items
+        ]
+
+        last_page = math.ceil(pagination.total / per_page)
+
+        all_pages = []
+
+        for x in range(last_page):
+            all_pages.append(x + 1)
+
+        return jsonify(
+            {
+                "items": items,
+                "total": pagination.total,
+                "page": page,
+                "per_page": per_page,
+                "last_page": last_page,
+                "all_pages": all_pages,
+            }
+        )
 
     @products_ns.marshal_with(product_model)
     @products_ns.expect(product_model)

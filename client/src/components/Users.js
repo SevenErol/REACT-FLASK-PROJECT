@@ -207,11 +207,9 @@ const LoggedInHome = () => {
                         <Pagination>
                             <Pagination.First page={1} onClick={() => getPagedUsers(1)} />
 
-                            {pages.length <= 10 ?
-                                pages.map((page, key) => (
-                                    <Pagination.Item active={active === page} page={page} onClick={() => getPagedUsers(page)}>{page}</Pagination.Item>
-                                ))
-                                : "nossir"}
+                            {pages.map((page, key) => (
+                                <Pagination.Item active={active === page} page={page} onClick={() => getPagedUsers(page)}>{page}</Pagination.Item>
+                            ))}
 
 
                             <Pagination.Last page={lastPage} onClick={() => getPagedUsers(lastPage)} />
