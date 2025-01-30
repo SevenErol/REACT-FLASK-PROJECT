@@ -12,6 +12,16 @@ category_model = categories_ns.model(
 )
 
 
+@categories_ns.route("/allcategories")
+class CategoriesResource(Resource):
+
+    @categories_ns.marshal_list_with(category_model)
+    def get(self):
+        # recupera tutti i Prodotti
+        categories = Category.query.all()
+        return categories
+
+
 @categories_ns.route("/categories")
 class CategoriesResource(Resource):
 
@@ -69,7 +79,7 @@ class CategoriesResource(Resource):
 
 
 @categories_ns.route("/category/<int:id>")
-class ProductResource(Resource):
+class CategoryResource(Resource):
     @categories_ns.marshal_with(category_model)
     def get(self, id):
         # recupera una Categoria tramite id

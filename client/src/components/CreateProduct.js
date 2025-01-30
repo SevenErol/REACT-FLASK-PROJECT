@@ -43,7 +43,7 @@ const CreateProduct = () => {
 
     useEffect(
         () => {
-            axios.get('http://127.0.0.1:5000/category/categories')
+            axios.get('http://127.0.0.1:5000/category/allcategories')
                 .then(res => {
                     setCategories(res.data)
                 })

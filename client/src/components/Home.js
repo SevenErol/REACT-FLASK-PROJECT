@@ -10,216 +10,104 @@ import Pagination from 'react-bootstrap/Pagination';
 
 const LoggedInHome = () => {
 
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
+    const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY');
 
-    const [products, setProducts] = useState([])
-    const [show, setShow] = useState(false)
-    const [productId, setProductId] = useState(0)
-    const [deleteshow, setDeleteShow] = useState(false)
-    const [searchbar, setSearchbar] = useState('')
-    const [categories, setCategories] = useState([])
+    const [products, setProducts] = useState([]);
+    const [show, setShow] = useState(false);
+    const [productId, setProductId] = useState(null);
+    const [deleteShow, setDeleteShow] = useState(false);
+    const [searchbar, setSearchbar] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [activePage, setActivePage] = useState(1);
+    const [pages, setPages] = useState([]);
+    const [lastPage, setLastPage] = useState(1);
 
-    const [pages, setPage] = useState([])
-    const [active, setActive] = useState(1)
-    const [page, setCurrentpage] = useState(1)
-    const [lastPage, setLastPage] = useState(1)
-    const [total, setTotal] = useState(2)
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors }
-    } = useForm()
+    const headers = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${JSON.parse(token)}`,
+        },
+    };
 
+    useEffect(() => {
+        fetchProducts();
+        fetchCategories();
+    }, []);
 
-    const inputChangeHandler = (e) => {
-        const inputValue = e.target.value
-        setSearchbar(inputValue)
-    }
-
-    const filteredProducts = (search) => {
-
-        const object = {
-            "input": search
+    const fetchProducts = async () => {
+        try {
+            const res = await axios.get('http://127.0.0.1:5000/product/products');
+            setProducts(res.data.items);
+            setPages(res.data.all_pages);
+            setLastPage(res.data.last_page);
+        } catch (err) {
+            console.error('Failed to fetch products:', err);
         }
+    };
 
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+    const fetchCategories = async () => {
+        try {
+            const res = await axios.get('http://127.0.0.1:5000/category/allcategories');
+            setCategories(res.data);
+        } catch (err) {
+            console.error('Failed to fetch categories:', err);
         }
+    };
 
-        axios
-            .post('http://127.0.0.1:5000/product/search', object, headers)
-            .then((response) => {
-                setProducts(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+    const searchProducts = async () => {
+        try {
+            const res = await axios.post('http://127.0.0.1:5000/product/search', { input: searchbar }, headers);
+            setProducts(res.data);
+            setSearchbar('');
+        } catch (err) {
+            console.error('Search failed:', err);
+        }
+    };
 
-    }
-
-    const getAllProductsSearch = () => {
-        return (
-            filteredProducts(searchbar),
-            setSearchbar('')
-        )
-    }
-
-    const getAllProducts = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/product/products')
-                .then(res => {
-                    setProducts(res.data.items)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getAllCategories = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/category/categories')
-                .then(res => {
-                    setCategories(res.data.items)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const pagedProducts = (page) => {
-        return (
-
-            axios.get('http://127.0.0.1:5000/product/products?page=' + page.toString())
-                .then(res => {
-                    setProducts(res.data.items)
-                    console.log(res.data.items)
-                    console.log(page)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getPagedProducts = (page) => {
-        return (
-            setCurrentpage(page),
-            pagedProducts(page),
-            setActive(page)
-        )
-    }
-
-    const getPages = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/product/products')
-                .then(res => {
-                    setPage(res.data.all_pages)
-                    console.log(res.data.all_pages)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getTotal = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/product/products')
-                .then(res => {
-                    setTotal(res.data.total)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getLastPage = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/product/products')
-                .then(res => {
-                    setLastPage(res.data.last_page)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    useEffect(
-        () => {
-            getAllProducts()
-            getAllCategories()
-            getPages()
-            getTotal()
-        }, []
-    )
-
-    const closeModal = () => {
-        setShow(false)
-    }
-
-    const closeModalDelete = () => {
-        setDeleteShow(false)
-    }
-
-    const deleteModal = (id) => {
-        setDeleteShow(true)
-        setProductId(id)
-    }
+    const handlePagination = async (page) => {
+        try {
+            setActivePage(page);
+            const res = await axios.get(`http://127.0.0.1:5000/product/products?page=${page}`);
+            setProducts(res.data.items);
+        } catch (err) {
+            console.error('Pagination failed:', err);
+        }
+    };
 
     const showModal = (id) => {
-        setShow(true)
-        setProductId(id)
-
-        products.map(
-            (product, key) => {
-                if (product.id === id) {
-                    setValue('name', product.name)
-                    setValue('description', product.description)
-                    setValue('price', product.price)
-                    setValue('stock', product.stock)
-                    setValue('category_id', product.category_id)
-                }
-            }
-        )
-    }
-
-    const updateProduct = (data) => {
-
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+        const product = products.find((p) => p.id === id);
+        if (product) {
+            setShow(true);
+            setProductId(id);
+            setValue('name', product.name);
+            setValue('description', product.description);
+            setValue('price', product.price);
+            setValue('stock', product.stock);
+            setValue('category_id', product.category_id);
         }
+    };
 
-        axios
-            .put(`http://127.0.0.1:5000/product/product/${productId}`, data, headers)
-            .then(res => res.json)
-            .then(data => {
-                const reload = window.location.reload()
-                reload()
-
-            }
-            )
-            .catch(err => console.log(err))
-    }
-
-    const deleteProduct = (id) => {
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+    const updateProduct = async (data) => {
+        try {
+            await axios.put(`http://127.0.0.1:5000/product/product/${productId}`, data, headers);
+            setShow(false);
+            fetchProducts();
+        } catch (err) {
+            console.error('Failed to update product:', err);
         }
+    };
 
-        axios.delete(`/product/product/${id}`, headers)
-            .then(res => res.json)
-            .then(data => {
-                getAllProducts()
-                setDeleteShow(false)
-            }
-            )
-            .catch(err => console.log(err))
-    }
+    const deleteProduct = async () => {
+        try {
+            await axios.delete(`http://127.0.0.1:5000/product/product/${productId}`, headers);
+            setDeleteShow(false);
+            fetchProducts();
+        } catch (err) {
+            console.error('Failed to delete product:', err);
+        }
+    };
 
 
     return (
@@ -245,7 +133,7 @@ const LoggedInHome = () => {
                                 <h1>Products</h1>
                             </div>
 
-                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllProductsSearch} />
+                            <Searchbar searchbar={searchbar} onChange={(e) => setSearchbar(e.target.value)} onClick={searchProducts} />
 
                             <div className='col-2'>
                                 <Link className='btn btn-success' to="/create_product">Add new product</Link>
@@ -268,31 +156,30 @@ const LoggedInHome = () => {
                                 </thead>
 
                                 {
-                                    products.map(
-                                        (product, key) => (
-                                            <Product key={key} {...product} onClick={() => { showModal(product.id) }} onDelete={() => { deleteModal(product.id) }} />
-                                        )
-                                    )
+                                    products.map((product) => (
+                                        <Product categoryname={product.categoryname} key={product.id} {...product} onClick={() => showModal(product.id)} onDelete={() => { setProductId(product.id); setDeleteShow(true); }} />
+                                    ))
                                 }
+
 
                             </Table>
 
 
                         </div>
                         <Pagination>
-                            <Pagination.First page={1} onClick={() => getPagedProducts(1)} />
+                            <Pagination.First onClick={() => handlePagination(1)} />
 
                             {pages.map((page, key) => (
-                                <Pagination.Item active={active === page} page={page} onClick={() => getPagedProducts(page)}>{page}</Pagination.Item>
+                                <Pagination.Item key={page} active={activePage === page} onClick={() => handlePagination(page)}>{page}</Pagination.Item>
                             ))}
 
 
-                            <Pagination.Last page={lastPage} onClick={() => getPagedProducts(lastPage)} />
+                            <Pagination.Last onClick={() => handlePagination(lastPage)} />
                         </Pagination>
                     </div>
                 </div>
 
-                <Modal show={show} size='lg' onHide={closeModal}>
+                <Modal show={show} size='lg' onHide={() => setShow(false)}>
                     <Modal.Header closeButton>
                         <Modal.Title>
                             Update Product
@@ -300,66 +187,68 @@ const LoggedInHome = () => {
                     </Modal.Header>
                     <Modal.Body>
                         {/* Campo name oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type='text' placheholder='Product name' {...register('name', { required: true, maxLength: 25 })} />
-                        </Form.Group>
+                        <Form onSubmit={handleSubmit(updateProduct)}>
+                            <Form.Group>
+                                <Form.Label>Name</Form.Label>
+                                <Form.Control type='text' placheholder='Product name' {...register('name', { required: true, maxLength: 25 })} />
+                            </Form.Group>
 
-                        {errors.name && <p style={{ color: 'red' }}><small>Name is required</small></p>}
-                        {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
+                            {errors.name && <p style={{ color: 'red' }}><small>Name is required</small></p>}
+                            {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
 
-                        {/* Campo description oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control as='textarea' rows={5} placheholder='Product description' {...register('description', { required: true, maxLength: 255 })} />
-                        </Form.Group>
+                            {/* Campo description oggetto product */}
+                            <Form.Group>
+                                <Form.Label>Description</Form.Label>
+                                <Form.Control as='textarea' rows={5} placheholder='Product description' {...register('description', { required: true, maxLength: 255 })} />
+                            </Form.Group>
 
-                        {errors.description && <p style={{ color: 'red' }}><small>Description is required</small></p>}
-                        {errors.description?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Description should be less than 255 characters</small> </p>}
+                            {errors.description && <p style={{ color: 'red' }}><small>Description is required</small></p>}
+                            {errors.description?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Description should be less than 255 characters</small> </p>}
 
-                        {/* Campo price oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" min="1" step=".01" placheholder='Product price' {...register('price', { required: true })} />
-                        </Form.Group>
+                            {/* Campo price oggetto product */}
+                            <Form.Group>
+                                <Form.Label>Price</Form.Label>
+                                <Form.Control type="number" min="1" step=".01" placheholder='Product price' {...register('price', { required: true })} />
+                            </Form.Group>
 
-                        {errors.price && <p style={{ color: 'red' }}><small>Price is required</small></p>}
+                            {errors.price && <p style={{ color: 'red' }}><small>Price is required</small></p>}
 
-                        {/* Campo stock oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Stock</Form.Label>
-                            <Form.Select placheholder='Product stock' {...register('stock', { required: true })} >
-                                <option value='1'>Yes</option>
-                                <option value='0'>No</option>
-                            </Form.Select>
-                        </Form.Group>
+                            {/* Campo stock oggetto product */}
+                            <Form.Group>
+                                <Form.Label>Stock</Form.Label>
+                                <Form.Select placheholder='Product stock' {...register('stock', { required: true })} >
+                                    <option value='1'>Yes</option>
+                                    <option value='0'>No</option>
+                                </Form.Select>
+                            </Form.Group>
 
-                        {errors.stock && <p style={{ color: 'red' }}><small>Stock needs a value</small></p>}
+                            {errors.stock && <p style={{ color: 'red' }}><small>Stock needs a value</small></p>}
 
-                        {/* Campo category_id oggetto product */}
-                        <Form.Group>
-                            <Form.Label>Category</Form.Label>
-                            <Form.Select placheholder='Product stock' {...register('category_id', { required: true })} >
-                                <option disabled>Select a category</option>
-                                {
-                                    categories.map(
-                                        (category, key) => (
-                                            <option key={key} value={category.id}>{category.name}</option>
+                            {/* Campo category_id oggetto product */}
+                            <Form.Group>
+                                <Form.Label>Category</Form.Label>
+                                <Form.Select placheholder='Product stock' {...register('category_id', { required: true })} >
+                                    <option disabled>Select a category</option>
+                                    {
+                                        categories.map(
+                                            (category, key) => (
+                                                <option key={key} value={category.id}>{category.name}</option>
+                                            )
                                         )
-                                    )
-                                }
-                            </Form.Select>
-                        </Form.Group>
+                                    }
+                                </Form.Select>
+                            </Form.Group>
 
-                        {errors.category_id && <p style={{ color: 'red' }}><small>Category is required</small></p>}
+                            {errors.category_id && <p style={{ color: 'red' }}><small>Category is required</small></p>}
 
-                        <Form.Group>
-                            <Button as='sub' variant='primary' onClick={handleSubmit(updateProduct)}>Update product</Button>
-                        </Form.Group>
+                            <Form.Group>
+                                <Button variant='primary' type='submit'>Update product</Button>
+                            </Form.Group>
+                        </Form>
                     </Modal.Body>
                 </Modal>
 
-                <Modal show={deleteshow} size='lg' onHide={closeModalDelete}>
+                <Modal show={deleteShow} size='lg' onHide={() => setDeleteShow(false)}>
 
                     <Modal.Header closeButton>
                         <Modal.Title>Warning: Irreversible Action</Modal.Title>
@@ -370,8 +259,8 @@ const LoggedInHome = () => {
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={closeModalDelete}>Close</Button>
-                        <Button variant="danger" onClick={() => { deleteProduct(productId) }}>Confirm delete</Button>
+                        <Button variant="secondary" onClick={() => setDeleteShow(false)}>Close</Button>
+                        <Button variant="danger" onClick={deleteProduct}>Confirm delete</Button>
                     </Modal.Footer>
 
                 </Modal>

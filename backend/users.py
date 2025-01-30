@@ -32,6 +32,17 @@ input_model = users_ns.model("Input", {"input": fields.String()})
 # Define the API
 
 
+@users_ns.route("/allusers")
+class UsersResource(Resource):
+
+    @users_ns.marshal_list_with(user_model)
+    def get(self):
+        # recupera tutti i Prodotti
+
+        users = User.query.all()
+        return users
+
+
 @users_ns.route("/users")
 class UsersResource(Resource):
 

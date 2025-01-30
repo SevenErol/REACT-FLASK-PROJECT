@@ -26,6 +26,17 @@ class HelloResource(Resource):
         return {"message": "Hello World"}
 
 
+@products_ns.route("/allproducts")
+class ProductsResource(Resource):
+
+    @products_ns.marshal_list_with(product_model)
+    def get(self):
+        # recupera tutti i Prodotti
+
+        products = Product.query.all()
+        return products
+
+
 @products_ns.route("/products")
 class ProductsResource(Resource):
 
