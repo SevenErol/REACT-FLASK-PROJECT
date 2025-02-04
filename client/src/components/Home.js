@@ -59,8 +59,9 @@ const LoggedInHome = () => {
     const searchProducts = async () => {
         try {
             const res = await axios.post('http://127.0.0.1:5000/product/search', { input: searchbar }, headers);
-            setProducts(res.data);
-            setSearchbar('');
+            setProducts(res.data.items);
+            setPages(res.data.all_pages);
+            setLastPage(res.data.last_page);
         } catch (err) {
             console.error('Search failed:', err);
         }
@@ -69,8 +70,19 @@ const LoggedInHome = () => {
     const handlePagination = async (page) => {
         try {
             setActivePage(page);
-            const res = await axios.get(`http://127.0.0.1:5000/product/products?page=${page}`);
-            setProducts(res.data.items);
+            if (searchbar === '') {
+
+                const res = await axios.get(`http://127.0.0.1:5000/product/products?page=${page}`);
+                setProducts(res.data.items);
+
+            } else {
+                const res = await axios.post(`http://127.0.0.1:5000/product/search?page=${page}`, { input: searchbar }, headers);
+                setProducts(res.data.items);
+                setPages(res.data.all_pages);
+                setLastPage(res.data.last_page);
+            }
+
+
         } catch (err) {
             console.error('Pagination failed:', err);
         }
