@@ -12,150 +12,81 @@ const LoggedInHome = () => {
     let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
 
     const [users, setUsers] = useState([])
-    const [pages, setPage] = useState([])
-    const [total, setTotal] = useState(2)
-    const [lastPage, setLastPage] = useState(1)
-    const [deleteshow, setDeleteShow] = useState(false)
     const [userId, setUserId] = useState(0)
-    const [searchbar, setSearchbar] = useState('')
-    const [page, setCurrentpage] = useState(1)
-    const [active, setActive] = useState(1)
+    const [deleteShow, setDeleteShow] = useState(false);
+    const [searchbar, setSearchbar] = useState('');
+    const [activePage, setActivePage] = useState(1);
+    const [pages, setPages] = useState([]);
+    const [lastPage, setLastPage] = useState(1);
 
-
-    const inputChangeHandler = (e) => {
-        const inputValue = e.target.value
-        setSearchbar(inputValue)
-    }
-
-    const getAllUsers = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/user/users')
-                .then(res => {
-
-                    setUsers(res.data.items)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const pagedUsers = (page) => {
-        return (
-
-            axios.get('http://127.0.0.1:5000/user/users?page=' + page.toString())
-                .then(res => {
-                    setUsers(res.data.items)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getPagedUsers = (page) => {
-        return (
-            setCurrentpage(page),
-            pagedUsers(page),
-            setActive(page)
-        )
-    }
-
-    const getPages = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/user/users')
-                .then(res => {
-                    setPage(res.data.all_pages)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getTotal = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/user/users')
-                .then(res => {
-                    setTotal(res.data.total)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getLastPage = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/user/users')
-                .then(res => {
-                    setLastPage(res.data.last_page)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const filteredUsers = (search) => {
-
-        const object = {
-            "input": search
-        }
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
-        }
-
-        axios.post('http://127.0.0.1:5000/user/search', object, headers)
-            .then((response) => {
-                setUsers(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-
-    }
-
-    const getAllUsersSearch = () => {
-        return (
-            filteredUsers(searchbar),
-            setSearchbar('')
-        )
-    }
+    const headers = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${JSON.parse(token)}`,
+        },
+    };
 
     useEffect(
         () => {
-            getAllUsers()
-            getPages()
-            getTotal()
-            getLastPage()
+            fetchUsers()
         }, []
-    )
+    );
 
-    const closeModalDelete = () => {
-        setDeleteShow(false)
-    }
+    const fetchUsers = async () => {
+        try {
+            const res = await axios.get('http://127.0.0.1:5000/user/users');
+            setUsers(res.data.items);
+            setPages(res.data.all_pages);
+            setLastPage(res.data.last_page);
+            setActivePage(1);
+        } catch (err) {
+            console.error('Failed to fetch users:', err);
+        }
+    };
 
-    const deleteModal = (id) => {
-        setDeleteShow(true)
-        setUserId(id)
-    }
+    const searchUsers = async () => {
 
-    const deleteUser = (id) => {
-
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+        try {
+            const res = await axios.post('http://127.0.0.1:5000/user/search', { input: searchbar }, headers);
+            setUsers(res.data.items);
+            setPages(res.data.all_pages);
+            setLastPage(res.data.last_page);
+        } catch (err) {
+            console.error('Search failed:', err);
         }
 
-        axios.delete(`http://127.0.0.1:5000/user/user/${id}`, headers)
-            .then(res => res.json)
-            .then(data => {
-                getAllUsers()
-                setDeleteShow(false)
+    };
+
+    const handlePagination = async (page) => {
+        try {
+            setActivePage(page);
+            if (searchbar === '') {
+
+                const res = await axios.get(`http://127.0.0.1:5000/user/users?page=${page}`);
+                setUsers(res.data.items);
+
+            } else {
+                const res = await axios.post(`http://127.0.0.1:5000/user/search?page=${page}`, { input: searchbar }, headers);
+                setUsers(res.data.items);
+                setPages(res.data.all_pages);
+                setLastPage(res.data.last_page);
             }
-            )
-            .catch(err => console.log(err))
-    }
 
 
+        } catch (err) {
+            console.error('Pagination failed:', err);
+        }
+    };
+
+    const deleteUser = async () => {
+        try {
+            await axios.delete(`http://127.0.0.1:5000/user/user/${userId}`, headers);
+            setDeleteShow(false);
+            fetchUsers();
+        } catch (err) {
+            console.error('Failed to delete user:', err);
+        }
+    };
 
     return (
         <div className='products container-fluid lm_main'>
@@ -178,7 +109,7 @@ const LoggedInHome = () => {
                             <div className='col-2'>
                                 <h1>Users</h1>
                             </div>
-                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllUsersSearch} />
+                            <Searchbar searchbar={searchbar} onChange={(e) => setSearchbar(e.target.value)} onClick={searchUsers} />
                         </div>
 
                         <div className='row'>
@@ -195,8 +126,8 @@ const LoggedInHome = () => {
 
                                 {
                                     users.map(
-                                        (product, key) => (
-                                            <User key={key} {...product} onDelete={() => { deleteModal(product.id) }} />
+                                        (user, key) => (
+                                            <User key={key} {...user} onDelete={() => { setUserId(user.id); setDeleteShow(true); }} />
                                         )
                                     )
                                 }
@@ -205,19 +136,19 @@ const LoggedInHome = () => {
 
                         </div>
                         <Pagination>
-                            <Pagination.First page={1} onClick={() => getPagedUsers(1)} />
+                            <Pagination.First page={1} onClick={() => handlePagination(1)} />
 
                             {pages.map((page, key) => (
-                                <Pagination.Item active={active === page} page={page} onClick={() => getPagedUsers(page)}>{page}</Pagination.Item>
+                                <Pagination.Item active={activePage === page} key={page} onClick={() => handlePagination(page)}>{page}</Pagination.Item>
                             ))}
 
 
-                            <Pagination.Last page={lastPage} onClick={() => getPagedUsers(lastPage)} />
+                            <Pagination.Last onClick={() => handlePagination(lastPage)} />
                         </Pagination>
                     </div>
                 </div>
 
-                <Modal show={deleteshow} size='lg' onHide={closeModalDelete}>
+                <Modal show={deleteShow} size='lg' onHide={() => setDeleteShow(false)}>
 
                     <Modal.Header closeButton>
                         <Modal.Title>Warning: Irreversible Action</Modal.Title>
@@ -228,8 +159,8 @@ const LoggedInHome = () => {
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={closeModalDelete}>Close</Button>
-                        <Button variant="danger" onClick={() => { deleteUser(userId) }}>Confirm delete</Button>
+                        <Button variant="secondary" onClick={() => setDeleteShow(false)}>Close</Button>
+                        <Button variant="danger" onClick={deleteUser}>Confirm delete</Button>
                     </Modal.Footer>
 
                 </Modal>
@@ -244,7 +175,7 @@ const LoggedInHome = () => {
 const LoggedOutHome = () => {
     return (
         <div className='users'>
-            <h1>Utenti Non Loggato</h1>
+            <h1>Utente Non Loggato</h1>
             <Link className="btn btn-primary btn-lg btn-submit" to="/signup">Signup</Link>
         </div>
     )

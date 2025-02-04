@@ -153,12 +153,46 @@ class UserResource(Resource):
 
 @users_ns.route("/search")
 class UsersResource(Resource):
-    @users_ns.marshal_with(user_model)
+    # @users_ns.marshal_with(user_model)
     def post(self):
         data = request.get_json()
         input = data.get("input")
         search = "%{}%".format(input)
 
-        users = User.query.filter(User.username.like(search)).all()
+        # users = User.query.filter(User.username.like(search)).all()
 
-        return users
+        page = request.args.get("page", default=1, type=int)
+        per_page = request.args.get("per_page", default=2, type=int)
+
+        pagination = User.query.filter(User.username.like(search)).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+        items = [
+            {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "password": user.password,
+            }
+            for user in pagination.items
+        ]
+
+        last_page = math.ceil(pagination.total / per_page)
+
+        all_pages = []
+
+        for x in range(last_page):
+            all_pages.append(x + 1)
+
+        return jsonify(
+            {
+                "items": items,
+                "total": pagination.total,
+                "page": page,
+                "per_page": per_page,
+                "last_page": last_page,
+                "all_pages": all_pages,
+            }
+        )
+
+        # return users

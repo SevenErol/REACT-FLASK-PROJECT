@@ -6,14 +6,22 @@ const Product = props => {
 
     const [category, setCategory] = useState('')
 
-    const getCategoryName = (category_id) => {
-        return (
-            axios.get(`http://127.0.0.1:5000/category/category/${category_id}`)
-                .then(res => {
-                    setCategory(res.data.name)
-                })
-                .catch(err => console.log(err))
-        )
+    const getCategoryName = async (category_id) => {
+
+        try {
+
+            if (category_id == null) {
+                setCategory('Nessuna categoria')
+            } else {
+
+                const res = await axios.get(`http://127.0.0.1:5000/category/category/${category_id}`);
+                setCategory(res.data.name)
+
+            }
+
+        } catch (err) {
+            console.error('Failed to fetch category:', err);
+        }
     }
 
     useEffect(
