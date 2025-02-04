@@ -42,6 +42,7 @@ const LoggedInHome = () => {
             setProducts(res.data.items);
             setPages(res.data.all_pages);
             setLastPage(res.data.last_page);
+            setActivePage(1)
         } catch (err) {
             console.error('Failed to fetch products:', err);
         }

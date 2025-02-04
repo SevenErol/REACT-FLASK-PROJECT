@@ -10,198 +10,105 @@ import Pagination from 'react-bootstrap/Pagination';
 
 const LoggedInHome = () => {
 
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
+    const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY');
 
-    const [categories, setCategories] = useState([])
-    const [show, setShow] = useState(false)
-    const [deleteshow, setDeleteShow] = useState(false)
-    const [categoryId, setCategoryId] = useState(0)
-    const [searchbar, setSearchbar] = useState('')
-
-    const [pages, setPage] = useState([])
-    const [active, setActive] = useState(1)
-    const [page, setCurrentpage] = useState(1)
-    const [lastPage, setLastPage] = useState(1)
-    const [total, setTotal] = useState(2)
+    const [categories, setCategories] = useState([]);
+    const [show, setShow] = useState(false);
+    const [categoryId, setCategoryId] = useState(null);
+    const [deleteShow, setDeleteShow] = useState(false);
+    const [searchbar, setSearchbar] = useState('');
+    const [activePage, setActivePage] = useState(1);
+    const [pages, setPages] = useState([]);
+    const [lastPage, setLastPage] = useState(1);
 
 
-    const {
-        register,
-        setValue,
-        handleSubmit,
-        formState: { errors }
-    } = useForm()
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 
-    const inputChangeHandler = (e) => {
-        const inputValue = e.target.value
-        setSearchbar(inputValue)
-    }
-
-    const getAllCategories = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/category/categories')
-                .then(res => {
-                    setCategories(res.data.items)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const filteredCategories = (search) => {
-
-        const object = {
-            "input": search
-        }
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
-        }
-
-        axios
-            .post('http://127.0.0.1:5000/category/search', object, headers)
-            .then((response) => {
-                setCategories(response.data.items);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-
-    }
-
-    const getAllCategoriesSearch = () => {
-        return (
-            filteredCategories(searchbar),
-            setSearchbar('')
-        )
-    }
-
-    const pagedCategories = (page) => {
-        return (
-
-            axios.get('http://127.0.0.1:5000/category/categories?page=' + page.toString())
-                .then(res => {
-                    setCategories(res.data.items)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getPagedCategories = (page) => {
-        return (
-            setCurrentpage(page),
-            pagedCategories(page),
-            setActive(page)
-        )
-    }
-
-    const getPages = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/category/categories')
-                .then(res => {
-                    setPage(res.data.all_pages)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getTotal = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/category/categories')
-                .then(res => {
-                    setTotal(res.data.total)
-                })
-                .catch(err => console.log(err))
-        )
-    }
-
-    const getLastPage = () => {
-        return (
-            axios.get('http://127.0.0.1:5000/category/categories')
-                .then(res => {
-                    setLastPage(res.data.last_page)
-                })
-                .catch(err => console.log(err))
-        )
-    }
+    const headers = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${JSON.parse(token)}`,
+        },
+    };
 
     useEffect(
         () => {
-            getAllCategories()
-            getPages()
-            getTotal()
+            fetchCategories()
         }, []
-    )
+    );
 
-    const closeModal = () => {
-        setShow(false)
-    }
+    const fetchCategories = async () => {
+        try {
+            const res = await axios.get('http://127.0.0.1:5000/category/categories');
+            setCategories(res.data.items);
+            setPages(res.data.all_pages);
+            setLastPage(res.data.last_page);
+            setActivePage(1);
+        } catch (err) {
+            console.error('Failed to fetch categories:', err);
+        }
+    };
 
-    const closeModalDelete = () => {
-        setDeleteShow(false)
-    }
+    const searchCategories = async () => {
+        try {
+            const res = await axios.post('http://127.0.0.1:5000/category/search', { input: searchbar }, headers);
+            setCategories(res.data.items);
+            setPages(res.data.all_pages);
+            setLastPage(res.data.last_page);
+        } catch (err) {
+            console.error('Search failed:', err);
+        }
+    };
 
-    const deleteModal = (id) => {
-        setDeleteShow(true)
-        setCategoryId(id)
-    }
+    const handlePagination = async (page) => {
+        try {
+            setActivePage(page);
+            if (searchbar === '') {
+
+                const res = await axios.get(`http://127.0.0.1:5000/category/categories?page=${page}`);
+                setCategories(res.data.items);
+
+            } else {
+                const res = await axios.post(`http://127.0.0.1:5000/category/search?page=${page}`, { input: searchbar }, headers);
+                setCategories(res.data.items);
+                setPages(res.data.all_pages);
+                setLastPage(res.data.last_page);
+            }
+
+
+        } catch (err) {
+            console.error('Pagination failed:', err);
+        }
+    };
 
     const showModal = (id) => {
-        setShow(true)
-        setCategoryId(id)
-
-        categories.map(
-            (category, key) => {
-                if (category.id === id) {
-                    setValue('name', category.name)
-
-                }
-            }
-        )
-    }
-
-
-    const updateCategory = (data) => {
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+        const category = categories.find((p) => p.id === id);
+        if (category) {
+            setShow(true);
+            setCategoryId(id);
+            setValue('name', category.name);
         }
+    };
 
-        axios.put(`http://127.0.0.1:5000/category/category/${categoryId}`, data, headers)
-            .then(res => res.json)
-            .then(data => {
-                const reload = window.location.reload()
-                reload()
-
-            }
-            )
-            .catch(err => console.log(err))
-    }
-
-    const deleteCategory = (id) => {
-
-
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+    const updateCategory = async (data) => {
+        try {
+            await axios.put(`http://127.0.0.1:5000/category/category/${categoryId}`, data, headers);
+            setShow(false);
+            fetchCategories();
+        } catch (err) {
+            console.error('Failed to update category:', err);
         }
+    };
 
-        axios.delete(`http://127.0.0.1:5000/category/category/${id}`, headers)
-            .then(res => res.json)
-            .then(data => {
-                getAllCategories()
-                setDeleteShow(false)
-            }
-            )
-            .catch(err => console.log(err))
-    }
+    const deleteCategory = async () => {
+        try {
+            await axios.delete(`http://127.0.0.1:5000/category/category/${categoryId}`, headers);
+            setDeleteShow(false);
+            fetchCategories();
+        } catch (err) {
+            console.error('Failed to delete product:', err);
+        }
+    };
 
 
 
@@ -226,7 +133,7 @@ const LoggedInHome = () => {
                             <div className='col-2'>
                                 <h1>Categories</h1>
                             </div>
-                            <Searchbar searchbar={searchbar} onChange={inputChangeHandler} onClick={getAllCategoriesSearch} />
+                            <Searchbar searchbar={searchbar} onChange={(e) => setSearchbar(e.target.value)} onClick={searchCategories} />
                             <div className='col-2'>
                                 <Link className='btn btn-success' to="/create_category">Add new category</Link>
                             </div>
@@ -244,8 +151,8 @@ const LoggedInHome = () => {
 
                                 {
                                     categories.map(
-                                        (category, key) => (
-                                            <Category key={key} {...category} onClick={() => { showModal(category.id) }} onDelete={() => { deleteModal(category.id) }} />
+                                        (category) => (
+                                            <Category name={category.name} key={category.id} {...category} onClick={() => { showModal(category.id) }} onDelete={() => { setCategoryId(category.id); setDeleteShow(true); }} />
                                         )
                                     )
                                 }
@@ -254,20 +161,20 @@ const LoggedInHome = () => {
 
                         </div>
                         <Pagination>
-                            <Pagination.First page={1} onClick={() => getPagedCategories(1)} />
+                            <Pagination.First page={1} onClick={() => handlePagination(1)} />
 
                             {pages.map((page, key) => (
-                                <Pagination.Item active={active === page} page={page} onClick={() => getPagedCategories(page)}>{page}</Pagination.Item>
+                                <Pagination.Item active={activePage === page} key={page} onClick={() => handlePagination(page)}>{page}</Pagination.Item>
                             ))}
 
 
-                            <Pagination.Last page={lastPage} onClick={() => getPagedCategories(lastPage)} />
+                            <Pagination.Last onClick={() => handlePagination(lastPage)} />
                         </Pagination>
                     </div>
                 </div>
 
 
-                <Modal show={show} size='lg' onHide={closeModal}>
+                <Modal show={show} size='lg' onHide={() => setShow(false)}>
                     <Modal.Header closeButton>
                         <Modal.Title>
                             Update Category
@@ -275,22 +182,24 @@ const LoggedInHome = () => {
                     </Modal.Header>
                     <Modal.Body>
                         {/* Campo name oggetto category */}
-                        <Form.Group>
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control className='mb-2' type='text' placheholder='Category name' {...register('name', { required: true, maxLength: 25 })} />
-                        </Form.Group>
+                        <Form onSubmit={handleSubmit(updateCategory)}>
+                            <Form.Group>
+                                <Form.Label>Name</Form.Label>
+                                <Form.Control className='mb-2' type='text' placheholder='Category name' {...register('name', { required: true, maxLength: 25 })} />
+                            </Form.Group>
 
-                        {errors.name && <p style={{ color: 'red' }}><small>Category name is required</small></p>}
-                        {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
+                            {errors.name && <p style={{ color: 'red' }}><small>Category name is required</small></p>}
+                            {errors.name?.type === 'maxLength' && <p style={{ color: 'red' }}><small>Max characters should be 25</small> </p>}
 
 
-                        <Form.Group>
-                            <Button as='sub' variant='primary' onClick={handleSubmit(updateCategory)}>Update category</Button>
-                        </Form.Group>
+                            <Form.Group>
+                                <Button variant='primary' type='submit'>Update category</Button>
+                            </Form.Group>
+                        </Form>
                     </Modal.Body>
                 </Modal>
 
-                <Modal show={deleteshow} size='lg' onHide={closeModalDelete}>
+                <Modal show={deleteShow} size='lg' onHide={() => setDeleteShow(false)}>
 
                     <Modal.Header closeButton>
                         <Modal.Title>Warning: Irreversible Action</Modal.Title>
@@ -301,8 +210,8 @@ const LoggedInHome = () => {
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={closeModalDelete}>Close</Button>
-                        <Button variant="danger" onClick={() => { deleteCategory(categoryId) }}>Confirm delete</Button>
+                        <Button variant="secondary" onClick={() => setDeleteShow(false)}>Close</Button>
+                        <Button variant="danger" onClick={deleteCategory}>Confirm delete</Button>
                     </Modal.Footer>
 
                 </Modal>

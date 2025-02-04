@@ -8,7 +8,7 @@ const Searchbar = props => {
 
                     <Col xs="auto">
                         <Form.Control type="text"
-                            placeholder='Search Product Name'
+                            placeholder='Search by Name'
                             className=" mr-sm-2" value={props.searchbar} onChange={props.onChange}>
 
                         </Form.Control>

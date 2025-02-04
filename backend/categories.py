@@ -111,12 +111,45 @@ class CategoryResource(Resource):
 
 @categories_ns.route("/search")
 class CategoriesResource(Resource):
-    @categories_ns.marshal_with(category_model)
+    # @categories_ns.marshal_with(category_model)
     def post(self):
         data = request.get_json()
         input = data.get("input")
         search = "%{}%".format(input)
 
-        categories = Category.query.filter(Category.name.like(search)).all()
+        # categories = Category.query.filter(Category.name.like(search)).all()
 
-        return categories
+        page = request.args.get("page", default=1, type=int)
+        per_page = request.args.get("per_page", default=2, type=int)
+
+        pagination = Category.query.filter(Category.name.like(search)).paginate(
+            page=page, per_page=per_page, error_out=False
+        )
+
+        items = [
+            {
+                "id": category.id,
+                "name": category.name,
+            }
+            for category in pagination.items
+        ]
+
+        last_page = math.ceil(pagination.total / per_page)
+
+        all_pages = []
+
+        for x in range(last_page):
+            all_pages.append(x + 1)
+
+        return jsonify(
+            {
+                "items": items,
+                "total": pagination.total,
+                "page": page,
+                "per_page": per_page,
+                "last_page": last_page,
+                "all_pages": all_pages,
+            }
+        )
+
+        # return categories
