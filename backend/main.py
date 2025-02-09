@@ -8,6 +8,7 @@ from products import products_ns
 from auth import auth_ns
 from users import users_ns
 from categories import categories_ns
+from analytics import analytics_ns
 from flask_cors import CORS
 from config import DevConfig
 
@@ -30,6 +31,7 @@ def create_app():
     api.add_namespace(auth_ns)
     api.add_namespace(users_ns)
     api.add_namespace(categories_ns)
+    api.add_namespace(analytics_ns)
 
     @app.shell_context_processor
     def make_shell_context():

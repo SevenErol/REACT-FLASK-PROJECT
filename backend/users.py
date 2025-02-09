@@ -2,7 +2,6 @@ from flask import request, jsonify, make_response, render_template
 from flask_restx import Resource, Namespace, fields
 from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from marshmallow import Schema
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
