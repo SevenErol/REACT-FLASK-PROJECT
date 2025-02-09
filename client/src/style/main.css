@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .lm_header {
     height: 80px;
     color: #2E40A1;

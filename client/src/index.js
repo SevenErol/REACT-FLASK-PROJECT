@@ -11,6 +11,7 @@ import CreateProduct from './components/CreateProduct';
 import Users from './components/Users';
 import Categories from './components/Categories';
 import CreateCategory from './components/CreateCategory';
+import AnalyticsPage from './components/Analytics';
 
 const App = () => {
 
@@ -26,6 +27,7 @@ const App = () => {
                     <Route path="/users" element={<Users />} />
                     <Route path="/categories" element={<Categories />} />
                     <Route path="/create_category" element={<CreateCategory />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
                 </Routes>
             </div >
         </BrowserRouter>
