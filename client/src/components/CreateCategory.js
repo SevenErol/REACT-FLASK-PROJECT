@@ -2,8 +2,20 @@ import React from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { useAuth } from '../auth'
 
 const CreateCategory = () => {
+
+    const navigate = useNavigate()
+    const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY');
+
+    const headers = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${JSON.parse(token)}`,
+        },
+    };
 
     const {
         register,
@@ -12,33 +24,16 @@ const CreateCategory = () => {
         formState: { errors }
     } = useForm()
 
-    const navigate = useNavigate()
 
-    const createCategory = (data) => {
-        const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
-
-        const requestData = {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            },
-            body: JSON.stringify(data)
+    const createCategory = async (data) => {
+        try {
+            await axios.post('http://127.0.0.1:5000//category/categories', data, headers);
+            reset()
+            navigate('/categories')
+        } catch (err) {
+            console.error('Failed to update product:', err);
         }
-
-
-
-        fetch('/category/categories', requestData)
-            .then(res => res.json)
-            .then(data => {
-                reset()
-                navigate('/categories')
-            }
-            )
-            .catch(err => console.log(err))
-
-
-    }
+    };
 
 
     return (
@@ -66,4 +61,28 @@ const CreateCategory = () => {
     )
 }
 
-export default CreateCategory
+const LoggedOutHome = () => {
+    return (
+        <div className='products'>
+            <div className='container-fluid lm_main'>
+                <div className='row h-100 justify-content-center align-items-center'>
+                    <h1 className='text-center'>Authentication Failed</h1>
+                </div>
+            </div>
+
+
+        </div>
+    )
+}
+
+const CreateCategoryAuthPage = () => {
+
+    const [logged] = useAuth()
+    return (
+        <div>
+            {logged ? <CreateCategory /> : <LoggedOutHome />}
+        </div>
+    )
+}
+
+export default CreateCategoryAuthPage

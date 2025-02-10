@@ -20,8 +20,11 @@ data = [
     {"date": "2025-01-01", "category": "Electronics", "price": 1200, "quantity": 2},
     {"date": "2025-01-05", "category": "Furniture", "price": 800, "quantity": 1},
     {"date": "2025-02-01", "category": "Electronics", "price": 450, "quantity": 5},
-    {"date": "2025-02-03", "category": "Clothing", "price": 50, "quantity": 10},
+    {"date": "2025-02-03", "category": "Clothing", "price": 100, "quantity": 20},
     {"date": "2025-02-05", "category": "Furniture", "price": 950, "quantity": 2},
+    {"date": "2025-02-05", "category": "Food", "price": 1050, "quantity": 2},
+    {"date": "2025-02-05", "category": "Tools", "price": 750, "quantity": 7},
+    {"date": "2025-02-05", "category": "Books", "price": 150, "quantity": 12},
 ]
 
 # Carichiamo i dati in un DataFrame

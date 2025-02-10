@@ -61,3 +61,8 @@
     border-radius: 50%;
     display: inline-block;
 }
+
+#lm_graph_button {
+    color: white;
+    background-color: #cf1578;
+}

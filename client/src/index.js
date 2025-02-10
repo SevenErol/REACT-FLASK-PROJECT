@@ -7,11 +7,11 @@ import Navbar from './components/Navbar';
 import HomePage from './components/Home';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
-import CreateProduct from './components/CreateProduct';
+import CreateProductAuthPage from './components/CreateProduct';
 import Users from './components/Users';
 import Categories from './components/Categories';
-import CreateCategory from './components/CreateCategory';
-import AnalyticsPage from './components/Analytics';
+import CreateCategoryAuthPage from './components/CreateCategory';
+import AnalyticsAuthPage from './components/Analytics';
 
 const App = () => {
 
@@ -23,11 +23,11 @@ const App = () => {
                     <Route path="/home" element={<HomePage />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/create_product" element={<CreateProduct />} />
+                    <Route path="/create_product" element={<CreateProductAuthPage />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/categories" element={<Categories />} />
-                    <Route path="/create_category" element={<CreateCategory />} />
-                    <Route path="/analytics" element={<AnalyticsPage />} />
+                    <Route path="/create_category" element={<CreateCategoryAuthPage />} />
+                    <Route path="/analytics" element={<AnalyticsAuthPage />} />
                 </Routes>
             </div >
         </BrowserRouter>

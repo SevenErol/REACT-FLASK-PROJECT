@@ -126,6 +126,10 @@ const LoggedInHome = () => {
                     <div className='mb-3 p-2 text-center'>
                         <Link className="col-2 lm_menu_voice" to="/users">All users</Link>
                     </div>
+
+                    <div className='mb-3 p-2 text-center'>
+                        <Link className="col-2 lm_menu_voice" to="/analytics">Analytics</Link>
+                    </div>
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
                     <div className='container p-2'>
@@ -229,9 +233,14 @@ const LoggedInHome = () => {
 
 const LoggedOutHome = () => {
     return (
-        <div className='users'>
-            <h1>Categorie Non Loggato</h1>
-            <Link className="btn btn-primary btn-lg btn-submit" to="/signup">Signup</Link>
+        <div className='products'>
+            <div className='container-fluid lm_main'>
+                <div className='row h-100 justify-content-center align-items-center'>
+                    <h1 className='text-center'>Authentication Failed</h1>
+                </div>
+            </div>
+
+
         </div>
     )
 }

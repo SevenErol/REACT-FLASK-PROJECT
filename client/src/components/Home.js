@@ -138,6 +138,10 @@ const LoggedInHome = () => {
                     <div className='mb-3 p-2 text-center'>
                         <Link className="col-2 lm_menu_voice" to="/users">All users</Link>
                     </div>
+
+                    <div className='mb-3 p-2 text-center'>
+                        <Link className="col-2 lm_menu_voice" to="/analytics">Analytics</Link>
+                    </div>
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
                     <div className='container p-2'>
@@ -291,7 +295,7 @@ const LoggedOutHome = () => {
                 </div>
             </div>
 
-            <Link className="btn btn-primary btn-lg btn-submit" to="/signup">Signup</Link>
+
         </div>
     )
 }

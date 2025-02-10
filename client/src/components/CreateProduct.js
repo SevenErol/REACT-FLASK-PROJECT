@@ -3,8 +3,19 @@ import { Form, Button } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../auth'
 
 const CreateProduct = () => {
+
+    const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
+
+    const headers = {
+        headers: {
+            'content-type': 'application/json',
+            'Authorization': `Bearer ${JSON.parse(token)}`
+        }
+    }
+
 
     const [categories, setCategories] = useState([])
 
@@ -17,26 +28,15 @@ const CreateProduct = () => {
 
     const navigate = useNavigate()
 
-    const createProduct = (data) => {
-        const token = localStorage.getItem('REACT_TOKEN_AUTH_KEY')
+    const createProduct = async (data) => {
 
-        const headers = {
-            headers: {
-                'content-type': 'application/json',
-                'Authorization': `Bearer ${JSON.parse(token)}`
-            }
+        try {
+            await axios.post('http://127.0.0.1:5000/product/products', data, headers);
+            reset()
+            navigate('/home')
+        } catch (err) {
+            console.error('Failed to update product:', err);
         }
-
-
-
-        axios.post('http://127.0.0.1:5000/product/products', data, headers)
-            .then((response) => {
-                reset()
-                navigate('/home')
-            })
-            .catch((error) => {
-                console.error(error);
-            })
 
 
     }
@@ -122,4 +122,28 @@ const CreateProduct = () => {
     )
 }
 
-export default CreateProduct
+const LoggedOutHome = () => {
+    return (
+        <div className='products'>
+            <div className='container-fluid lm_main'>
+                <div className='row h-100 justify-content-center align-items-center'>
+                    <h1 className='text-center'>Authentication Failed</h1>
+                </div>
+            </div>
+
+
+        </div>
+    )
+}
+
+const CreateProductAuthPage = () => {
+
+    const [logged] = useAuth()
+    return (
+        <div>
+            {logged ? <CreateProduct /> : <LoggedOutHome />}
+        </div>
+    )
+}
+
+export default CreateProductAuthPage

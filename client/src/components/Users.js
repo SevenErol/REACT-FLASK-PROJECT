@@ -102,6 +102,10 @@ const LoggedInHome = () => {
                     <div className='mb-3 p-2 text-center'>
                         <Link className="col-2 lm_menu_voice" to="/categories">All categories</Link>
                     </div>
+
+                    <div className='mb-3 p-2 text-center'>
+                        <Link className="col-2 lm_menu_voice" to="/analytics">Analytics</Link>
+                    </div>
                 </div>
                 <div className='col-10 h-100 lm_inner_menu'>
                     <div className='container p-2'>
